@@ -1,0 +1,42 @@
+.about-page {
+  gap: 32px;
+}
+
+.eyebrow {
+  color: var(--accent-maroon);
+  font-weight: 800;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.about-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.content-block {
+  display: grid;
+  gap: 12px;
+}
+
+.content-block h2,
+.content-block p {
+  margin: 0;
+}
+
+.content-block p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.highlight {
+  border-top: 4px solid var(--palette-gold);
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}

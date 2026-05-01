@@ -1,0 +1,71 @@
+<section class="page narrow-page">
+  <header class="page-header">
+    <div>
+      <h1>Add rating</h1>
+      <p>Contributor ratings publish directly once the backend approves your account.</p>
+    </div>
+    <a class="button secondary" routerLink="/ratings">Back to ratings</a>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="restaurantName">Restaurant name</label>
+      <input id="restaurantName" type="text" formControlName="restaurantName">
+      @if (form.controls.restaurantName.touched && form.controls.restaurantName.invalid) {
+        <small>Restaurant name is required.</small>
+      }
+    </div>
+
+    <div class="split-grid">
+      <div class="field">
+        <label for="sauce">Sauce</label>
+        <input id="sauce" type="text" formControlName="sauce">
+        @if (form.controls.sauce.touched && form.controls.sauce.invalid) {
+          <small>Sauce rating is required.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="toppings">Toppings</label>
+        <input id="toppings" type="text" formControlName="toppings">
+        @if (form.controls.toppings.touched && form.controls.toppings.invalid) {
+          <small>Toppings rating is required.</small>
+        }
+      </div>
+    </div>
+
+    <div class="split-grid">
+      <div class="field">
+        <label for="crust">Crust</label>
+        <input id="crust" type="text" formControlName="crust">
+        @if (form.controls.crust.touched && form.controls.crust.invalid) {
+          <small>Crust rating is required.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="overallRating">Overall rating</label>
+        <input id="overallRating" type="number" min="1" max="10" formControlName="overallRating">
+        @if (form.controls.overallRating.touched && form.controls.overallRating.invalid) {
+          <small>Use a number from 1 to 10.</small>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="comments">Comments</label>
+      <textarea id="comments" formControlName="comments"></textarea>
+      @if (form.controls.comments.touched && form.controls.comments.invalid) {
+        <small>Comments are required.</small>
+      }
+    </div>
+
+    <button class="button primary" type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Saving...' : 'Publish rating' }}
+    </button>
+  </form>
+</section>

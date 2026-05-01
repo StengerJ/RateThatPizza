@@ -1,0 +1,45 @@
+<section class="page narrow-page">
+  <header class="page-header">
+    <div>
+      <h1>New blog post</h1>
+      <p>Add a contributor post with an optional YouTube video.</p>
+    </div>
+    <a class="button secondary" routerLink="/blog">Back to blog</a>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" type="text" formControlName="title">
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <small>Title must be at least 4 characters.</small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="slug">Slug</label>
+      <input id="slug" type="text" placeholder="leave blank to auto-generate" formControlName="slug">
+    </div>
+
+    <div class="field">
+      <label for="youtubeUrl">YouTube URL or video ID</label>
+      <input id="youtubeUrl" type="url" formControlName="youtubeUrl">
+    </div>
+
+    <div class="field">
+      <label for="body">Post body</label>
+      <textarea id="body" formControlName="body"></textarea>
+      @if (form.controls.body.touched && form.controls.body.invalid) {
+        <small>Post body must be at least 20 characters.</small>
+      }
+    </div>
+
+    <button class="button primary" type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Publishing...' : 'Publish post' }}
+    </button>
+  </form>
+</section>

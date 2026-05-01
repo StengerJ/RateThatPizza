@@ -1,0 +1,29 @@
+<nav class="navbar" aria-label="Primary navigation">
+  <a class="navbar-brand" routerLink="/">PGH-Pizza</a>
+
+  <div class="navbar-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/ratings" routerLinkActive="active">Ratings</a>
+    <a routerLink="/blog" routerLinkActive="active">Blog</a>
+    <a routerLink="/apply" routerLinkActive="active">Apply</a>
+    <a routerLink="/about-me" routerLinkActive="active">About</a>
+
+    @if (canContribute()) {
+      <a routerLink="/ratings/new" routerLinkActive="active">Add rating</a>
+      <a routerLink="/blog/new" routerLinkActive="active">New post</a>
+    }
+
+    @if (canAdmin()) {
+      <a routerLink="/admin/applications" routerLinkActive="active">Admin</a>
+    }
+  </div>
+
+  <div class="navbar-auth">
+    @if (auth.isLoggedIn()) {
+      <span>{{ auth.currentUser()?.displayName }}</span>
+      <button type="button" class="link-button" (click)="logout()">Logout</button>
+    } @else {
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+    }
+  </div>
+</nav>

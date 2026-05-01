@@ -1,0 +1,10 @@
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row-actions .button {
+  min-height: 36px;
+  padding: 6px 10px;
+}

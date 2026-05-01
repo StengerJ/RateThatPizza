@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pgh-pizza-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGH_POSTGRES_DB:-pgh_pizza}
+      POSTGRES_USER: ${PGH_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${PGH_POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgh-pizza-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: pgh-pizza-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGH_DB_URL: jdbc:postgresql://postgres:5432/${PGH_POSTGRES_DB:-pgh_pizza}
+      PGH_DB_USERNAME: ${PGH_POSTGRES_USER:-postgres}
+      PGH_DB_PASSWORD: ${PGH_POSTGRES_PASSWORD:-postgres}
+      PGH_FRONTEND_BASE_URL: ${PGH_FRONTEND_BASE_URL:-http://localhost:4200}
+      PGH_JWT_SECRET: ${PGH_JWT_SECRET:-local-development-secret-change-me-local-development-secret}
+      PGH_ADMIN_EMAIL: ${PGH_ADMIN_EMAIL:-admin@pgh-pizza.local}
+      PGH_ADMIN_PASSWORD: ${PGH_ADMIN_PASSWORD:-ChangeMe123!}
+      PGH_ADMIN_DISPLAY_NAME: ${PGH_ADMIN_DISPLAY_NAME:-PGH Admin}
+      SMTP_ENABLED: ${SMTP_ENABLED:-false}
+      SMTP_HOST: ${SMTP_HOST:-localhost}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_AUTH: ${SMTP_AUTH:-false}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - pgh-pizza-backend-logs:/app/logs
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: pgh-pizza-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+
+volumes:
+  pgh-pizza-postgres-data:
+  pgh-pizza-backend-logs:

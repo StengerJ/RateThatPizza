@@ -1,0 +1,24 @@
+.post-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.post-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.post-card h2,
+.post-card p {
+  margin: 0;
+}
+
+.post-card p:not(.meta) {
+  color: var(--muted);
+  line-height: 1.6;
+}

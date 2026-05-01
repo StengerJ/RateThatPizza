@@ -1,0 +1,74 @@
+<section class="page narrow-page">
+  <header class="page-header">
+    <div>
+      <h1>Apply to contribute</h1>
+      <p>
+        Create a pending contributor account. An admin must approve it before you can publish ratings
+        or blog posts.
+      </p>
+    </div>
+  </header>
+
+  @if (successMessage()) {
+    <p class="status success">{{ successMessage() }}</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="split-grid">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" formControlName="email">
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <small>Enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="displayName">Display name</label>
+        <input id="displayName" type="text" autocomplete="name" formControlName="displayName">
+        @if (form.controls.displayName.touched && form.controls.displayName.invalid) {
+          <small>Display name must be at least 2 characters.</small>
+        }
+      </div>
+    </div>
+
+    <div class="split-grid">
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="new-password" formControlName="password">
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <small>Password must be at least 8 characters.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          formControlName="confirmPassword"
+        >
+        @if (submitted() && !passwordsMatch()) {
+          <small>Passwords must match.</small>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="applicationReason">Why do you want to contribute?</label>
+      <textarea id="applicationReason" formControlName="applicationReason"></textarea>
+      @if (form.controls.applicationReason.touched && form.controls.applicationReason.invalid) {
+        <small>Please share at least 20 characters.</small>
+      }
+    </div>
+
+    <button class="button primary" type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Submitting...' : 'Submit application' }}
+    </button>
+  </form>
+</section>

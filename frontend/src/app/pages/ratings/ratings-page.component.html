@@ -1,0 +1,49 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Pizza ratings</h1>
+      <p>Browse every public pizza rating. The data source is the future Spring Boot REST API.</p>
+    </div>
+
+    @if (canCreate()) {
+      <a class="button primary" routerLink="/ratings/new">Add rating</a>
+    }
+  </header>
+
+  @if (loading()) {
+    <p class="status">Loading ratings...</p>
+  }
+
+  <div class="table-wrap">
+    <table aria-label="Pizza ratings table">
+      <thead>
+        <tr>
+          <th>Restaurant Name</th>
+          <th>Sauce</th>
+          <th>Toppings</th>
+          <th>Crust</th>
+          <th>Overall Rating</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!loading() && ratings().length === 0) {
+          <tr>
+            <td colspan="6" class="empty">No ratings are available yet.</td>
+          </tr>
+        } @else {
+          @for (rating of ratings(); track rating.id ?? rating.restaurantName) {
+            <tr>
+              <td>{{ rating.restaurantName }}</td>
+              <td>{{ rating.sauce }}</td>
+              <td>{{ rating.toppings }}</td>
+              <td>{{ rating.crust }}</td>
+              <td>{{ rating.overallRating }}</td>
+              <td>{{ rating.comments }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

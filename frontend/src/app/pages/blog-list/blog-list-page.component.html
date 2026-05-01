@@ -1,0 +1,33 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Pizza blog</h1>
+      <p>Read contributor posts, reviews, videos, and pizza notes.</p>
+    </div>
+
+    @if (canCreate()) {
+      <a class="button primary" routerLink="/blog/new">New post</a>
+    }
+  </header>
+
+  @if (loading()) {
+    <p class="status">Loading posts...</p>
+  }
+
+  @if (!loading() && posts().length === 0) {
+    <p class="status">No blog posts are available yet.</p>
+  }
+
+  <div class="post-grid">
+    @for (post of posts(); track post.id ?? post.slug) {
+      <article class="post-card">
+        <p class="meta">
+          {{ post.author }} · {{ post.createdAt | date: 'mediumDate' }}
+        </p>
+        <h2>{{ post.title }}</h2>
+        <p>{{ excerpt(post) }}</p>
+        <a class="button secondary" [routerLink]="['/blog', post.slug]">Read post</a>
+      </article>
+    }
+  </div>
+</section>

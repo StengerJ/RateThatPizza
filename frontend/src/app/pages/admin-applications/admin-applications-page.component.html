@@ -1,0 +1,68 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Contributor applications</h1>
+      <p>Admins can approve or reject pending contributor accounts.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="status">Loading applications...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <div class="table-wrap">
+    <table aria-label="Contributor applications table">
+      <thead>
+        <tr>
+          <th>Applicant</th>
+          <th>Email</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!loading() && applications().length === 0) {
+          <tr>
+            <td colspan="6" class="empty">No applications are waiting for review.</td>
+          </tr>
+        } @else {
+          @for (application of applications(); track application.id) {
+            <tr>
+              <td>{{ application.displayName }}</td>
+              <td>{{ application.email }}</td>
+              <td>{{ application.applicationReason }}</td>
+              <td>{{ application.status }}</td>
+              <td>{{ application.createdAt | date: 'mediumDate' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button
+                    class="button primary"
+                    type="button"
+                    [disabled]="application.status !== 'PENDING' || isProcessing(application.id)"
+                    (click)="approve(application)"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    class="button danger"
+                    type="button"
+                    [disabled]="application.status !== 'PENDING' || isProcessing(application.id)"
+                    (click)="reject(application)"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

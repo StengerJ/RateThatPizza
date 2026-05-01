@@ -1,0 +1,35 @@
+<section class="page narrow-page">
+  <a class="button secondary back-link" routerLink="/blog">Back to blog</a>
+
+  @if (loading()) {
+    <p class="status">Loading post...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="status">{{ errorMessage() }}</p>
+  }
+
+  @if (post(); as currentPost) {
+    <article class="content-block blog-post">
+      <header>
+        <p class="meta">
+          {{ currentPost.author }} · {{ currentPost.createdAt | date: 'mediumDate' }}
+        </p>
+        <h1>{{ currentPost.title }}</h1>
+      </header>
+
+      @if (embedUrl()) {
+        <div class="video-frame">
+          <iframe
+            [src]="embedUrl()"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+      }
+
+      <p class="post-body">{{ currentPost.body }}</p>
+    </article>
+  }
+</section>

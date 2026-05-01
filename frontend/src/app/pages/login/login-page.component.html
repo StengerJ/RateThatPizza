@@ -1,0 +1,37 @@
+<section class="page narrow-page">
+  <header class="page-header">
+    <div>
+      <h1>Login</h1>
+      <p>Approved contributors can add ratings and publish blog posts.</p>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" formControlName="email">
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <small>Enter a valid email address.</small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" formControlName="password">
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small>Password is required.</small>
+      }
+    </div>
+
+    <div class="actions">
+      <button class="button primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Logging in...' : 'Login' }}
+      </button>
+      <a class="button secondary" routerLink="/password-reset">Reset password</a>
+    </div>
+  </form>
+</section>

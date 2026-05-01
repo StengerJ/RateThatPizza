@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">PGH-Pizza Frontend And Backend Information Flow</title>
+  <desc id="desc">Diagram showing the browser loading Angular from an Nginx frontend container, Nginx proxying API calls to the Spring Boot backend, and the backend using PostgreSQL, SMTP, and logs.</desc>
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D93240"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F29F05"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#400F0F"/>
+    </marker>
+    <style>
+      .bg { fill: #fff8f2; }
+      .title { fill: #400F0F; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #8C2029; font-family: Arial, sans-serif; font-size: 16px; }
+      .box { fill: #ffffff; stroke: #8C2029; stroke-width: 3; rx: 12; }
+      .box-alt { fill: #fff1df; stroke: #F29F05; stroke-width: 3; rx: 12; }
+      .box-dark { fill: #400F0F; stroke: #400F0F; stroke-width: 3; rx: 12; }
+      .label { fill: #400F0F; font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; }
+      .small { fill: #400F0F; font-family: Arial, sans-serif; font-size: 15px; }
+      .small-light { fill: #ffffff; font-family: Arial, sans-serif; font-size: 15px; }
+      .label-light { fill: #ffffff; font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; }
+      .arrow-red { fill: none; stroke: #D93240; stroke-width: 4; marker-end: url(#arrow-red); }
+      .arrow-gold { fill: none; stroke: #F29F05; stroke-width: 4; marker-end: url(#arrow-gold); }
+      .arrow-dark { fill: none; stroke: #400F0F; stroke-width: 4; marker-end: url(#arrow-dark); }
+      .note { fill: #8C2029; font-family: Arial, sans-serif; font-size: 14px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="760"/>
+  <text class="title" x="70" y="64">PGH-Pizza Information Flow</text>
+  <text class="subtitle" x="70" y="93">Browser traffic enters the frontend container, Nginx serves Angular and proxies API requests to Spring Boot.</text>
+
+  <rect class="box" x="70" y="180" width="220" height="150"/>
+  <text class="label" x="105" y="222">User Browser</text>
+  <text class="small" x="105" y="258">Loads PGH-Pizza UI</text>
+  <text class="small" x="105" y="283">Submits forms</text>
+  <text class="small" x="105" y="308">Stores JWT locally</text>
+
+  <rect class="box-alt" x="405" y="135" width="310" height="240"/>
+  <text class="label" x="445" y="176">Frontend Container</text>
+  <text class="small" x="445" y="207">Exposed port: 4200</text>
+  <rect class="box" x="438" y="232" width="244" height="52"/>
+  <text class="small" x="463" y="264">Nginx serves Angular files</text>
+  <rect class="box" x="438" y="300" width="244" height="52"/>
+  <text class="small" x="463" y="332">Nginx proxies /api requests</text>
+
+  <rect class="box" x="845" y="150" width="285" height="220"/>
+  <text class="label" x="888" y="190">Backend Container</text>
+  <text class="small" x="888" y="222">Spring Boot REST API</text>
+  <text class="small" x="888" y="247">Exposed port: 8080</text>
+  <text class="small" x="888" y="272">JWT roles and ownership checks</text>
+  <text class="small" x="888" y="297">Flyway + Spring Data JPA</text>
+  <text class="small" x="888" y="322">BCrypt password hashes</text>
+
+  <rect class="box-dark" x="855" y="510" width="260" height="135"/>
+  <text class="label-light" x="902" y="552">PostgreSQL</text>
+  <text class="small-light" x="902" y="583">Exposed port: 5432</text>
+  <text class="small-light" x="902" y="608">Users, ratings, blog posts,</text>
+  <text class="small-light" x="902" y="631">applications, reset tokens</text>
+
+  <rect class="box" x="405" y="510" width="285" height="135"/>
+  <text class="label" x="443" y="552">Email And Logs</text>
+  <text class="small" x="443" y="583">SMTP reset emails when set</text>
+  <text class="small" x="443" y="608">Dev reset link fallback in logs</text>
+  <text class="small" x="443" y="631">Client errors POST to /api/client-logs</text>
+
+  <path class="arrow-gold" d="M 290 220 C 345 190, 350 180, 405 180"/>
+  <text class="note" x="307" y="175">GET / and static assets</text>
+
+  <path class="arrow-red" d="M 290 288 C 345 325, 350 326, 405 326"/>
+  <text class="note" x="305" y="354">Angular calls /api</text>
+
+  <path class="arrow-red" d="M 715 326 C 772 326, 785 260, 845 260"/>
+  <text class="note" x="735" y="308">proxy_pass backend:8080/api</text>
+
+  <path class="arrow-dark" d="M 987 370 L 987 510"/>
+  <text class="note" x="1002" y="450">JDBC parameter binding</text>
+
+  <path class="arrow-dark" d="M 845 325 C 770 420, 740 536, 690 575"/>
+  <text class="note" x="704" y="475">SMTP or log fallback</text>
+
+  <path class="arrow-gold" d="M 845 208 C 770 138, 725 138, 715 176"/>
+  <text class="note" x="724" y="154">JSON responses</text>
+
+  <path class="arrow-gold" d="M 405 252 C 350 252, 345 252, 290 252"/>
+  <text class="note" x="306" y="244">Rendered Angular app</text>
+</svg>
