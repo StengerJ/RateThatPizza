@@ -11,6 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./password-reset-request-page.component.css']
 })
 export class PasswordResetRequestPage {
+  private static readonly resetSentMessage =
+    'Password reset sent, please allow up to five minutes to receive your reset link.';
+
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly auth = inject(AuthService);
 
@@ -21,10 +24,12 @@ export class PasswordResetRequestPage {
   readonly submitting = signal(false);
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
+  readonly requestSent = signal(false);
 
   submit(): void {
     this.successMessage.set('');
     this.errorMessage.set('');
+    this.requestSent.set(false);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -34,14 +39,23 @@ export class PasswordResetRequestPage {
     this.submitting.set(true);
     this.auth.requestPasswordReset(this.form.controls.email.value.trim()).subscribe({
       next: () => {
-        this.successMessage.set('If an account exists for that email, a reset link will be sent.');
-        this.form.reset();
-        this.submitting.set(false);
+        this.showResetSentMessage();
       },
       error: () => {
-        this.errorMessage.set('Password reset could not be requested. Please try again later.');
-        this.submitting.set(false);
+        this.showResetSentMessage();
       }
     });
+  }
+
+  retry(): void {
+    this.successMessage.set('');
+    this.errorMessage.set('');
+    this.requestSent.set(false);
+  }
+
+  private showResetSentMessage(): void {
+    this.successMessage.set(PasswordResetRequestPage.resetSentMessage);
+    this.requestSent.set(true);
+    this.submitting.set(false);
   }
 }
