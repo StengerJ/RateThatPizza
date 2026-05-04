@@ -61,7 +61,7 @@ The backend uses PostgreSQL with database `pgh_pizza`, user `postgres`, and pass
 The default local admin is `admin@pgh-pizza.local` / `ChangeMe123!`. Override it with
 `PGH_ADMIN_EMAIL`, `PGH_ADMIN_PASSWORD`, and `PGH_ADMIN_DISPLAY_NAME`.
 
-## Linux Container Server
+## Linux Hybrid Server
 
 From the repo root on a Linux server, run:
 
@@ -69,12 +69,33 @@ From the repo root on a Linux server, run:
 bash scripts/install-and-run-linux.sh
 ```
 
-The script installs Docker if needed, creates a local `.env` file with generated secrets,
-builds the frontend and backend images, and starts three separate containers:
+The script installs host dependencies, creates a local `.env` file with generated secrets,
+starts PostgreSQL as a Docker container, builds the backend JAR, installs the backend as a
+systemd service, builds the Angular frontend, and serves it with the host Nginx systemd
+service.
 
-- `pgh-pizza-frontend` exposed on `${FRONTEND_PORT:-4200}`.
-- `pgh-pizza-backend` exposed on `${BACKEND_PORT:-8080}`.
-- `pgh-pizza-postgres` exposed on `${POSTGRES_PORT:-5432}`.
+- `pgh-pizza-postgres`: Docker container exposed only on `127.0.0.1:${POSTGRES_PORT:-5432}`.
+- `pgh-pizza-backend`: systemd service exposed only on `127.0.0.1:${BACKEND_PORT:-8080}`.
+- `nginx`: systemd service exposed publicly on `${FRONTEND_PORT:-80}` and proxying `/api`
+  to the backend.
 
-For a real server, set `PGH_FRONTEND_BASE_URL` in `.env` to the public frontend URL so
-password reset links point to the correct host.
+For a public server, point your domain's `A` record at the server, then set these values
+in `.env` and rerun the script:
+
+```bash
+PGH_SERVER_NAME=yourdomain.com
+PGH_FRONTEND_BASE_URL=http://yourdomain.com
+FRONTEND_PORT=80
+```
+
+To have the script request a Let's Encrypt certificate through Certbot after DNS is
+pointing at the server, also set:
+
+```bash
+PGH_ENABLE_HTTPS=true
+PGH_CERTBOT_EMAIL=you@example.com
+PGH_FRONTEND_BASE_URL=https://yourdomain.com
+```
+
+For DigitalOcean firewall rules, allow public inbound `80` and `443`, restrict `22` to
+your IP, and keep `8080` and `5432` closed to the public internet.
