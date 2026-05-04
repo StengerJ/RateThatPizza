@@ -18,9 +18,18 @@
   margin: 0;
 }
 
+.location-line {
+  color: var(--accent-maroon);
+  font-weight: 800;
+}
+
 .post-card p:not(.meta) {
   color: var(--muted);
   line-height: 1.6;
+}
+
+.post-card .location-line {
+  color: var(--accent-maroon);
 }
 
 .row-actions {

@@ -2,6 +2,10 @@
   box-shadow: var(--shadow);
 }
 
+.table-wrap table {
+  min-width: 1040px;
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;

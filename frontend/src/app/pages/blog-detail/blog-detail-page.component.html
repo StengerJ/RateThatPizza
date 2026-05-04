@@ -13,9 +13,15 @@
     <article class="content-block blog-post">
       <header>
         <p class="meta">
-          {{ currentPost.author }} - {{ currentPost.createdAt | date: 'mediumDate' }}
+          @if (currentPost.authorId) {
+            <a class="profile-link" [routerLink]="['/profiles', currentPost.authorId]">{{ currentPost.author }}</a>
+          } @else {
+            {{ currentPost.author }}
+          }
+          - {{ currentPost.createdAt | date: 'mediumDate' }}
         </p>
         <h1>{{ currentPost.title }}</h1>
+        <p class="location-line">{{ currentPost.location }}</p>
         @if (canManage(currentPost)) {
           <div class="row-actions">
             <a class="button secondary" [routerLink]="['/blog', currentPost.slug, 'edit']">Edit</a>

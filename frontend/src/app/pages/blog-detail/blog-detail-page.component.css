@@ -13,6 +13,12 @@
   margin: 8px 0 0;
 }
 
+.location-line {
+  color: var(--accent-maroon);
+  font-weight: 800;
+  margin: 8px 0 0;
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;

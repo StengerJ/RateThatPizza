@@ -6,6 +6,8 @@ public record UserResponse(
         UUID id,
         String email,
         String displayName,
+        String profileBio,
+        String profilePictureUrl,
         UserRole role,
         UserStatus status
 ) {
@@ -14,6 +16,8 @@ public record UserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getDisplayName(),
+                user.getProfileBio(),
+                user.getProfilePictureUrl(),
                 user.getRole(),
                 user.getStatus());
     }

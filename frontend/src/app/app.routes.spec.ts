@@ -14,6 +14,7 @@ describe('app routes', () => {
     expect(paths).toContain('blog/:slug');
     expect(paths).toContain('blog/:slug/edit');
     expect(paths).toContain('login');
+    expect(paths).toContain('profiles/:id');
   });
 
   it('should protect contributor and admin routes', () => {

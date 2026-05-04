@@ -11,10 +11,12 @@ import jakarta.validation.constraints.Size;
 
 public record RatingRequest(
         @NotBlank @Size(max = 160) String restaurantName,
+        @NotBlank @Size(max = 180) String location,
         @NotBlank @Size(max = 120) String sauce,
         @NotBlank @Size(max = 160) String toppings,
         @NotBlank @Size(max = 120) String crust,
         @NotNull @DecimalMin("1.0") @DecimalMax("10.0") @Digits(integer = 2, fraction = 2) BigDecimal overallRating,
+        @NotNull @DecimalMin("1.0") @DecimalMax("10.0") @Digits(integer = 2, fraction = 2) BigDecimal affordabilityRating,
         @NotBlank @Size(max = 5000) String comments
 ) {
 }

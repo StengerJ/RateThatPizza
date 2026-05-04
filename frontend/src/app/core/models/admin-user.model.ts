@@ -7,4 +7,5 @@ export interface AdminUser {
   role: UserRole;
   status: UserStatus;
   createdAt: string;
+  protectedAdmin: boolean;
 }

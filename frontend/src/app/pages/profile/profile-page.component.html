@@ -1,0 +1,164 @@
+<section class="page profile-page">
+  @if (loading()) {
+    <p class="status">Loading profile...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  @if (successMessage()) {
+    <p class="status success">{{ successMessage() }}</p>
+  }
+
+  @if (profile(); as currentProfile) {
+    <header class="profile-hero content-block">
+      @if (currentProfile.profilePictureUrl) {
+        <img
+          class="profile-photo"
+          [src]="currentProfile.profilePictureUrl"
+          [alt]="currentProfile.displayName + ' profile picture'"
+        >
+      } @else {
+        <div class="profile-photo fallback" aria-hidden="true">
+          {{ profileInitials(currentProfile.displayName) }}
+        </div>
+      }
+
+      <div class="profile-summary">
+        <p class="meta">Reviewer profile</p>
+        <h1>{{ currentProfile.displayName }}</h1>
+        <p class="bio">{{ currentProfile.bio || 'No bio has been added yet.' }}</p>
+      </div>
+
+      @if (isOwnProfile() && !editing()) {
+        <button class="button secondary" type="button" (click)="startEditing(currentProfile)">
+          Edit profile
+        </button>
+      }
+    </header>
+
+    @if (editing()) {
+      <form class="form-panel" [formGroup]="form" (ngSubmit)="saveProfile()">
+        <div class="split-grid">
+          <div class="field">
+            <label for="displayName">Profile name</label>
+            <input id="displayName" type="text" formControlName="displayName">
+            @if (form.controls.displayName.touched && form.controls.displayName.invalid) {
+              <small>Use 2 to 120 characters.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="profilePictureUrl">Profile picture URL</label>
+            <input id="profilePictureUrl" type="url" formControlName="profilePictureUrl">
+            @if (form.controls.profilePictureUrl.touched && form.controls.profilePictureUrl.invalid) {
+              <small>Use 500 characters or fewer.</small>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="bio">Bio</label>
+          <textarea id="bio" maxlength="500" formControlName="bio"></textarea>
+          @if (form.controls.bio.touched && form.controls.bio.invalid) {
+            <small>Bio must be 500 characters or fewer.</small>
+          }
+        </div>
+
+        <div class="actions">
+          <button class="button primary" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving...' : 'Save profile' }}
+          </button>
+          <button class="button secondary" type="button" [disabled]="saving()" (click)="cancelEditing()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    }
+
+    <section class="content-block profile-section">
+      <div class="section-heading">
+        <h2>Ratings</h2>
+        <span>{{ currentProfile.ratings.length }}</span>
+      </div>
+
+      <div class="table-wrap profile-table-wrap">
+        <table aria-label="Profile ratings table">
+          <thead>
+            <tr>
+              <th>Restaurant</th>
+              <th>Location</th>
+              <th>Overall</th>
+              <th>Affordability</th>
+              <th>Sauce</th>
+              <th>Toppings</th>
+              <th>Crust</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (currentProfile.ratings.length === 0) {
+              <tr>
+                <td colspan="8" class="empty">No ratings posted yet.</td>
+              </tr>
+            } @else {
+              @for (rating of currentProfile.ratings; track rating.id ?? rating.restaurantName) {
+                <tr>
+                  <td data-label="Restaurant">{{ rating.restaurantName }}</td>
+                  <td data-label="Location">{{ rating.location }}</td>
+                  <td data-label="Overall">{{ rating.overallRating }}</td>
+                  <td data-label="Affordability">{{ rating.affordabilityRating }}</td>
+                  <td data-label="Sauce">{{ rating.sauce }}</td>
+                  <td data-label="Toppings">{{ rating.toppings }}</td>
+                  <td data-label="Crust">{{ rating.crust }}</td>
+                  <td data-label="Comments">{{ rating.comments }}</td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-block profile-section">
+      <div class="section-heading">
+        <h2>Blog posts</h2>
+        <span>{{ currentProfile.blogPosts.length }}</span>
+      </div>
+
+      <div class="table-wrap profile-table-wrap">
+        <table aria-label="Profile blog posts table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Location</th>
+              <th>Published</th>
+              <th>Excerpt</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (currentProfile.blogPosts.length === 0) {
+              <tr>
+                <td colspan="5" class="empty">No blog posts published yet.</td>
+              </tr>
+            } @else {
+              @for (post of currentProfile.blogPosts; track post.id ?? post.slug) {
+                <tr>
+                  <td data-label="Title">{{ post.title }}</td>
+                  <td data-label="Location">{{ post.location }}</td>
+                  <td data-label="Published">{{ post.createdAt | date: 'mediumDate' }}</td>
+                  <td data-label="Excerpt">{{ excerpt(post) }}</td>
+                  <td data-label="Action">
+                    <a class="button secondary compact" [routerLink]="['/blog', post.slug]">Read</a>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>

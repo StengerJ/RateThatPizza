@@ -136,7 +136,7 @@ export class AdminApplicationsPage implements OnInit {
   }
 
   setUserRole(user: AdminUser, role: UserRole): void {
-    if (user.role === role || this.isCurrentUser(user)) {
+    if (user.role === role || this.isCurrentUser(user) || (user.protectedAdmin && role !== 'ADMIN')) {
       return;
     }
 

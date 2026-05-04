@@ -64,10 +64,12 @@ public class RatingService {
 
     private void applyRequest(RatingEntity rating, RatingRequest request) {
         rating.setRestaurantName(TextSanitizer.trim(request.restaurantName()));
+        rating.setLocation(TextSanitizer.trim(request.location()));
         rating.setSauce(TextSanitizer.trim(request.sauce()));
         rating.setToppings(TextSanitizer.trim(request.toppings()));
         rating.setCrust(TextSanitizer.trim(request.crust()));
         rating.setOverallRating(request.overallRating());
+        rating.setAffordabilityRating(request.affordabilityRating());
         rating.setComments(TextSanitizer.trim(request.comments()));
     }
 

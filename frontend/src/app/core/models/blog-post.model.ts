@@ -3,6 +3,7 @@ export interface BlogPost {
   authorId?: string;
   title: string;
   slug: string;
+  location: string;
   body: string;
   youtubeUrl?: string;
   youtubeVideoId?: string;
@@ -13,6 +14,7 @@ export interface BlogPost {
 export interface BlogPostCreateRequest {
   title: string;
   slug: string;
+  location: string;
   body: string;
   youtubeUrl?: string;
   youtubeVideoId?: string;

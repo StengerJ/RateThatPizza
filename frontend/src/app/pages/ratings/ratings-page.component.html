@@ -23,10 +23,12 @@
       <thead>
         <tr>
           <th>Restaurant Name</th>
+          <th>Location</th>
           <th>Sauce</th>
           <th>Toppings</th>
           <th>Crust</th>
           <th>Overall Rating</th>
+          <th>Affordability Rating</th>
           <th>Contributor</th>
           <th>Comments</th>
           <th>Actions</th>
@@ -35,17 +37,25 @@
       <tbody>
         @if (!loading() && ratings().length === 0) {
           <tr>
-            <td colspan="8" class="empty">No ratings are available yet.</td>
+            <td colspan="10" class="empty">No ratings are available yet.</td>
           </tr>
         } @else {
           @for (rating of ratings(); track rating.id ?? rating.restaurantName) {
             <tr>
               <td data-label="Restaurant">{{ rating.restaurantName }}</td>
+              <td data-label="Location">{{ rating.location }}</td>
               <td data-label="Sauce">{{ rating.sauce }}</td>
               <td data-label="Toppings">{{ rating.toppings }}</td>
               <td data-label="Crust">{{ rating.crust }}</td>
               <td data-label="Rating">{{ rating.overallRating }}</td>
-              <td data-label="Contributor">{{ rating.creator }}</td>
+              <td data-label="Affordability">{{ rating.affordabilityRating }}</td>
+              <td data-label="Contributor">
+                @if (rating.creatorId) {
+                  <a class="profile-link" [routerLink]="['/profiles', rating.creatorId]">{{ rating.creator }}</a>
+                } @else {
+                  {{ rating.creator }}
+                }
+              </td>
               <td data-label="Comments">{{ rating.comments }}</td>
               @if (canManage(rating)) {
                 <td data-label="Actions">

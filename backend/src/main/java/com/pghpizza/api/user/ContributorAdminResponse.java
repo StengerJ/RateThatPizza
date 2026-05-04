@@ -38,14 +38,18 @@ public record ContributorAdminResponse(
     public record ContributorRatingResponse(
             UUID id,
             String restaurantName,
+            String location,
             BigDecimal overallRating,
+            BigDecimal affordabilityRating,
             Instant createdAt
     ) {
         public static ContributorRatingResponse from(RatingEntity rating) {
             return new ContributorRatingResponse(
                     rating.getId(),
                     rating.getRestaurantName(),
+                    rating.getLocation(),
                     rating.getOverallRating(),
+                    rating.getAffordabilityRating(),
                     rating.getCreatedAt());
         }
     }
@@ -54,6 +58,7 @@ public record ContributorAdminResponse(
             UUID id,
             String title,
             String slug,
+            String location,
             Instant createdAt
     ) {
         public static ContributorBlogPostResponse from(BlogPostEntity post) {
@@ -61,6 +66,7 @@ public record ContributorAdminResponse(
                     post.getId(),
                     post.getTitle(),
                     post.getSlug(),
+                    post.getLocation(),
                     post.getCreatedAt());
         }
     }

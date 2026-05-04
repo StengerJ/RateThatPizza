@@ -16,12 +16,22 @@
   }
 
   <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
-    <div class="field">
-      <label for="title">Title</label>
-      <input id="title" type="text" formControlName="title">
-      @if (form.controls.title.touched && form.controls.title.invalid) {
-        <small>Title must be at least 4 characters.</small>
-      }
+    <div class="split-grid">
+      <div class="field">
+        <label for="title">Title</label>
+        <input id="title" type="text" formControlName="title">
+        @if (form.controls.title.touched && form.controls.title.invalid) {
+          <small>Title must be at least 4 characters.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="location">Location</label>
+        <input id="location" type="text" formControlName="location">
+        @if (form.controls.location.touched && form.controls.location.invalid) {
+          <small>Location is required.</small>
+        }
+      </div>
     </div>
 
     <div class="field">

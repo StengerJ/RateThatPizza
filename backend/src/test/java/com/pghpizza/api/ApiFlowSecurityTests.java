@@ -70,10 +70,12 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of(
                         "restaurantName", "Mineo's",
+                        "location", "Squirrel Hill",
                         "sauce", "Balanced",
                         "toppings", "Pepperoni",
                         "crust", "Crisp",
                         "overallRating", 8,
+                        "affordabilityRating", 7,
                         "comments", "Pending users should not be able to publish"))))
                 .andExpect(status().isForbidden());
     }
@@ -95,13 +97,17 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of(
                         "restaurantName", "Driftwood Oven",
+                        "location", "Lawrenceville",
                         "sauce", "Bright",
                         "toppings", "Mushroom",
                         "crust", "Wood fired",
                         "overallRating", 9,
+                        "affordabilityRating", 8,
                         "comments", "Great slice"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.creator").value("First Contributor"))
+                .andExpect(jsonPath("$.location").value("Lawrenceville"))
+                .andExpect(jsonPath("$.affordabilityRating").value(8))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -117,13 +123,16 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of(
                         "restaurantName", "Driftwood Oven",
+                        "location", "Lawrenceville",
                         "sauce", "Bright",
                         "toppings", "Mushroom",
                         "crust", "Wood fired",
                         "overallRating", 9.5,
+                        "affordabilityRating", 7.5,
                         "comments", "Great slice, edited"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.overallRating").value(9.5))
+                .andExpect(jsonPath("$.affordabilityRating").value(7.5))
                 .andExpect(jsonPath("$.comments").value("Great slice, edited"));
 
         mockMvc.perform(delete("/api/ratings/{id}", ratingId)
@@ -149,13 +158,16 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of(
                         "restaurantName", "Badamo's",
+                        "location", "North Side",
                         "sauce", "Tangy",
                         "toppings", "Cheese",
                         "crust", "Thin",
                         "overallRating", 8.5,
+                        "affordabilityRating", 9.25,
                         "comments", "Worth logging"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.overallRating").value(8.5))
+                .andExpect(jsonPath("$.affordabilityRating").value(9.25))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -166,6 +178,7 @@ class ApiFlowSecurityTests {
                 .content(json(Map.of(
                         "title", "A good slice",
                         "slug", "a-good-slice",
+                        "location", "North Side",
                         "body", "A contributor note about pizza.",
                         "youtubeUrl", "",
                         "youtubeVideoId", ""))))
@@ -185,8 +198,11 @@ class ApiFlowSecurityTests {
                 .andExpect(jsonPath("$[0].ratingCount").value(1))
                 .andExpect(jsonPath("$[0].blogPostCount").value(1))
                 .andExpect(jsonPath("$[0].ratings[0].restaurantName").value("Badamo's"))
+                .andExpect(jsonPath("$[0].ratings[0].location").value("North Side"))
                 .andExpect(jsonPath("$[0].ratings[0].overallRating").value(8.5))
+                .andExpect(jsonPath("$[0].ratings[0].affordabilityRating").value(9.25))
                 .andExpect(jsonPath("$[0].blogPosts[0].title").value("A good slice"))
+                .andExpect(jsonPath("$[0].blogPosts[0].location").value("North Side"))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -215,6 +231,75 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of("email", "monitor@example.com", "password", "MonitorPassword123!"))))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void publicProfilesShowReviewerRatingsAndBlogPostsAndUsersCanUpdateTheirProfile() throws Exception {
+        submitApplication("profile@example.com", "Profile Contributor", "ProfilePassword123!");
+
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+        approveFirstPendingApplication(adminToken);
+
+        String contributorToken = login("profile@example.com", "ProfilePassword123!");
+
+        String ratingResponse = mockMvc.perform(post("/api/ratings")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "restaurantName", "Slice Island",
+                        "location", "Bloomfield",
+                        "sauce", "Garlic",
+                        "toppings", "Banana peppers",
+                        "crust", "Soft",
+                        "overallRating", 8.25,
+                        "affordabilityRating", 9,
+                        "comments", "A profile-worthy slice"))))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        mockMvc.perform(post("/api/blog-posts")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "title", "Profile pizza notes",
+                        "slug", "profile-pizza-notes",
+                        "location", "Bloomfield",
+                        "body", "A blog post that should appear on the reviewer profile.",
+                        "youtubeUrl", "",
+                        "youtubeVideoId", ""))))
+                .andExpect(status().isOk());
+
+        String profileId = objectMapper.readTree(ratingResponse).get("creatorId").asText();
+
+        mockMvc.perform(get("/api/profiles/{id}", profileId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.displayName").value("Profile Contributor"))
+                .andExpect(jsonPath("$.bio").value(""))
+                .andExpect(jsonPath("$.ratings[0].restaurantName").value("Slice Island"))
+                .andExpect(jsonPath("$.ratings[0].location").value("Bloomfield"))
+                .andExpect(jsonPath("$.blogPosts[0].title").value("Profile pizza notes"))
+                .andExpect(jsonPath("$.blogPosts[0].location").value("Bloomfield"));
+
+        mockMvc.perform(put("/api/profiles/me")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "displayName", "Profile Pizza Pro",
+                        "bio", "Trying every slice in Pittsburgh.",
+                        "profilePictureUrl", "https://pghpizza.org/profile.jpg"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.displayName").value("Profile Pizza Pro"))
+                .andExpect(jsonPath("$.bio").value("Trying every slice in Pittsburgh."))
+                .andExpect(jsonPath("$.profilePictureUrl").value("https://pghpizza.org/profile.jpg"));
+
+        mockMvc.perform(get("/api/auth/me")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.displayName").value("Profile Pizza Pro"))
+                .andExpect(jsonPath("$.profileBio").value("Trying every slice in Pittsburgh."))
+                .andExpect(jsonPath("$.profilePictureUrl").value("https://pghpizza.org/profile.jpg"));
     }
 
     @Test
@@ -264,6 +349,17 @@ class ApiFlowSecurityTests {
                 .header("Authorization", "Bearer " + contributorToken))
                 .andExpect(status().isOk());
 
+        mockMvc.perform(put("/api/admin/users/{id}/role", adminId)
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of("role", "CONTRIBUTOR"))))
+                .andExpect(status().isConflict());
+
+        mockMvc.perform(get("/api/auth/me")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("ADMIN"));
+
         mockMvc.perform(put("/api/admin/users/{id}/role", userId)
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -310,19 +406,23 @@ class ApiFlowSecurityTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(Map.of(
                         "restaurantName", maliciousText,
+                        "location", maliciousText,
                         "sauce", "Still sauce",
                         "toppings", "Plain text",
                         "crust", "Safe",
                         "overallRating", 7,
+                        "affordabilityRating", 6,
                         "comments", maliciousText))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.restaurantName").value(maliciousText))
+                .andExpect(jsonPath("$.location").value(maliciousText))
                 .andExpect(jsonPath("$.comments").value(maliciousText));
 
         assertThat(userRepository.findByEmail("admin@pgh-pizza.local")).isPresent();
         mockMvc.perform(get("/api/ratings"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].restaurantName").value(maliciousText));
+                .andExpect(jsonPath("$[0].restaurantName").value(maliciousText))
+                .andExpect(jsonPath("$[0].location").value(maliciousText));
     }
 
     private void submitApplication(String email, String displayName, String password) throws Exception {

@@ -19,7 +19,11 @@
 
   <div class="navbar-auth">
     @if (auth.isLoggedIn()) {
-      <span>{{ auth.currentUser()?.displayName }}</span>
+      @if (auth.currentUser()?.id; as currentUserId) {
+        <a [routerLink]="['/profiles', currentUserId]">{{ auth.currentUser()?.displayName }}</a>
+      } @else {
+        <span>{{ auth.currentUser()?.displayName }}</span>
+      }
       <button type="button" class="link-button" (click)="logout()">Logout</button>
     } @else {
       <a routerLink="/apply" routerLinkActive="active">Apply</a>

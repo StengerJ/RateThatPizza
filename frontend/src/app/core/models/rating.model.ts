@@ -3,10 +3,12 @@ export interface Rating {
   creatorId?: string;
   creator?: string;
   restaurantName: string;
+  location: string;
   sauce: string;
   toppings: string;
   crust: string;
   overallRating: number;
+  affordabilityRating: number;
   comments: string;
   createdAt?: string;
 }

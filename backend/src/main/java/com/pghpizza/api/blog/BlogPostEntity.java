@@ -34,6 +34,9 @@ public class BlogPostEntity {
     @Column(nullable = false, unique = true, length = 180)
     private String slug;
 
+    @Column(nullable = false, length = 180)
+    private String location;
+
     @Column(nullable = false)
     private String body;
 
@@ -87,6 +90,14 @@ public class BlogPostEntity {
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getBody() {

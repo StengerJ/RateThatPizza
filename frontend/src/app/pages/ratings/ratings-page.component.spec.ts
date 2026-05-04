@@ -51,10 +51,12 @@ describe('RatingsPage', () => {
 
     expect(headers).toEqual([
       'Restaurant Name',
+      'Location',
       'Sauce',
       'Toppings',
       'Crust',
       'Overall Rating',
+      'Affordability Rating',
       'Contributor',
       'Comments',
       'Actions'

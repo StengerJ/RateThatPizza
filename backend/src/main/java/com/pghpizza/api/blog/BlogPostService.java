@@ -79,6 +79,7 @@ public class BlogPostService {
     private void applyRequest(BlogPostEntity post, BlogPostRequest request) {
         post.setTitle(TextSanitizer.trim(request.title()));
         post.setSlug(TextSanitizer.trim(request.slug()));
+        post.setLocation(TextSanitizer.trim(request.location()));
         post.setBody(TextSanitizer.trim(request.body()));
         post.setYoutubeUrl(TextSanitizer.emptyToNull(request.youtubeUrl()));
         post.setYoutubeVideoId(TextSanitizer.emptyToNull(request.youtubeVideoId()));

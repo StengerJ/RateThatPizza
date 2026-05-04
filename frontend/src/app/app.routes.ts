@@ -10,6 +10,7 @@ import { BlogListPage } from './pages/blog-list/blog-list-page.component';
 import { LoginPage } from './pages/login/login-page.component';
 import { PasswordResetConfirmPage } from './pages/password-reset-confirm/password-reset-confirm-page.component';
 import { PasswordResetRequestPage } from './pages/password-reset-request/password-reset-request-page.component';
+import { ProfilePage } from './pages/profile/profile-page.component';
 import { RatingFormPage } from './pages/rating-form/rating-form-page.component';
 import { RatingsPage } from './pages/ratings/ratings-page.component';
 
@@ -82,6 +83,11 @@ export const routes: Routes = [
     path: 'password-reset/confirm',
     component: PasswordResetConfirmPage,
     title: 'Choose New Password | PGH-Pizza'
+  },
+  {
+    path: 'profiles/:id',
+    component: ProfilePage,
+    title: 'Reviewer Profile | PGH-Pizza'
   },
   {
     path: 'admin/applications',

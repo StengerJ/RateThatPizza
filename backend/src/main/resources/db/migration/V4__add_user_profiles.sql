@@ -1,0 +1,3 @@
+ALTER TABLE users ADD COLUMN profile_bio VARCHAR(500) NOT NULL DEFAULT '';
+
+ALTER TABLE users ADD COLUMN profile_picture_url VARCHAR(500);

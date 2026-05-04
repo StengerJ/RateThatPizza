@@ -32,6 +32,9 @@ public class RatingEntity {
     @Column(name = "restaurant_name", nullable = false, length = 160)
     private String restaurantName;
 
+    @Column(nullable = false, length = 180)
+    private String location;
+
     @Column(nullable = false, length = 120)
     private String sauce;
 
@@ -43,6 +46,9 @@ public class RatingEntity {
 
     @Column(name = "overall_rating", nullable = false, precision = 4, scale = 2)
     private BigDecimal overallRating;
+
+    @Column(name = "affordability_rating", nullable = false, precision = 4, scale = 2)
+    private BigDecimal affordabilityRating;
 
     @Column(nullable = false)
     private String comments;
@@ -85,6 +91,14 @@ public class RatingEntity {
         this.restaurantName = restaurantName;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public String getSauce() {
         return sauce;
     }
@@ -115,6 +129,14 @@ public class RatingEntity {
 
     public void setOverallRating(BigDecimal overallRating) {
         this.overallRating = overallRating;
+    }
+
+    public BigDecimal getAffordabilityRating() {
+        return affordabilityRating;
+    }
+
+    public void setAffordabilityRating(BigDecimal affordabilityRating) {
+        this.affordabilityRating = affordabilityRating;
     }
 
     public String getComments() {

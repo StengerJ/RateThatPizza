@@ -130,6 +130,7 @@
                     [disabled]="
                       user.role === 'CONTRIBUTOR' ||
                       isCurrentUser(user) ||
+                      user.protectedAdmin ||
                       isProcessing(actionKey('user-role', user.id))
                     "
                     (click)="setUserRole(user, 'CONTRIBUTOR')"
@@ -139,6 +140,9 @@
                 </div>
                 @if (isCurrentUser(user)) {
                   <span class="subtle">Current admin</span>
+                }
+                @if (user.protectedAdmin) {
+                  <span class="subtle">Default admin account</span>
                 }
               </td>
             </tr>
@@ -190,7 +194,10 @@
                         <div>
                           <strong>{{ rating.restaurantName }}</strong>
                           <span class="subtle">
-                            {{ rating.overallRating }}/10 - {{ rating.createdAt | date: 'mediumDate' }}
+                            {{ rating.location }} -
+                            Overall {{ rating.overallRating }}/10 -
+                            Affordability {{ rating.affordabilityRating }}/10 -
+                            {{ rating.createdAt | date: 'mediumDate' }}
                           </span>
                         </div>
                         <button
@@ -216,7 +223,9 @@
                       <li>
                         <div>
                           <strong>{{ post.title }}</strong>
-                          <span class="subtle">{{ post.createdAt | date: 'mediumDate' }}</span>
+                          <span class="subtle">
+                            {{ post.location }} - {{ post.createdAt | date: 'mediumDate' }}
+                          </span>
                         </div>
                         <button
                           class="button danger compact"

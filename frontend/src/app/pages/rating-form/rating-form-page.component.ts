@@ -22,10 +22,12 @@ export class RatingFormPage implements OnInit {
 
   readonly form = this.fb.group({
     restaurantName: ['', [Validators.required, Validators.minLength(2)]],
+    location: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(180)]],
     sauce: ['', [Validators.required]],
     toppings: ['', [Validators.required]],
     crust: ['', [Validators.required]],
     overallRating: [8, [Validators.required, Validators.min(1), Validators.max(10)]],
+    affordabilityRating: [8, [Validators.required, Validators.min(1), Validators.max(10)]],
     comments: ['', [Validators.required, Validators.minLength(5)]]
   });
 
@@ -55,10 +57,12 @@ export class RatingFormPage implements OnInit {
 
         this.form.patchValue({
           restaurantName: rating.restaurantName,
+          location: rating.location,
           sauce: rating.sauce,
           toppings: rating.toppings,
           crust: rating.crust,
           overallRating: rating.overallRating,
+          affordabilityRating: rating.affordabilityRating,
           comments: rating.comments
         });
         this.loading.set(false);
@@ -83,10 +87,12 @@ export class RatingFormPage implements OnInit {
     this.submitting.set(true);
     const request = {
       restaurantName: value.restaurantName.trim(),
+      location: value.location.trim(),
       sauce: value.sauce.trim(),
       toppings: value.toppings.trim(),
       crust: value.crust.trim(),
       overallRating: value.overallRating,
+      affordabilityRating: value.affordabilityRating,
       comments: value.comments.trim()
     };
 

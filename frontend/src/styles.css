@@ -246,6 +246,16 @@ tbody tr:last-child td {
   font-size: 0.92rem;
 }
 
+.profile-link {
+  color: var(--accent-maroon);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
 .content-block {
   background: var(--surface);
   border: 1px solid var(--border);

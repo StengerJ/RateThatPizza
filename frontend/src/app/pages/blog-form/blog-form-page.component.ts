@@ -23,6 +23,7 @@ export class BlogFormPage implements OnInit {
 
   readonly form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(4)]],
+    location: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(180)]],
     slug: [''],
     body: ['', [Validators.required, Validators.minLength(20)]],
     youtubeUrl: ['']
@@ -54,6 +55,7 @@ export class BlogFormPage implements OnInit {
         this.editingPostId = post.id ?? null;
         this.form.patchValue({
           title: post.title,
+          location: post.location,
           slug: post.slug,
           body: post.body,
           youtubeUrl: post.youtubeUrl ?? post.youtubeVideoId ?? ''
@@ -90,6 +92,7 @@ export class BlogFormPage implements OnInit {
     const request = {
       title: value.title.trim(),
       slug,
+      location: value.location.trim(),
       body: value.body.trim(),
       youtubeUrl: trimmedYoutubeUrl || undefined,
       youtubeVideoId: videoId ?? undefined
