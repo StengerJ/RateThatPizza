@@ -1,4 +1,5 @@
 {
+    default_sni {$PGH_TLS_SERVER_NAME:localhost}
     cert_issuer acme {
         profile shortlived
     }

@@ -83,21 +83,20 @@ PostgreSQL as a private database container with a persistent Docker volume.
 For a public domain, point your domain's `A` record at the Droplet, then set:
 
 ```bash
-PGH_SERVER_NAME=yourdomain.com
-PGH_SITE_ADDRESS=yourdomain.com
-PGH_FRONTEND_BASE_URL=https://yourdomain.com
-PGH_CERTBOT_EMAIL=you@example.com
+PGH_SITE_ADDRESS=pghpizza.org,www.pghpizza.org
+PGH_TLS_SERVER_NAME=pghpizza.org
+PGH_FRONTEND_BASE_URL=https://pghpizza.org
 FRONTEND_PORT=80
 HTTPS_PORT=443
 ```
 
-With `PGH_SITE_ADDRESS=yourdomain.com`, Caddy automatically requests and renews HTTPS
+With `PGH_SITE_ADDRESS=pghpizza.org,www.pghpizza.org`, Caddy automatically requests and renews HTTPS
 certificates. To use HTTPS directly on the Droplet's public IPv4 address, use the bare
 IPv4 address as the Caddy site address:
 
 ```bash
-PGH_SERVER_NAME=_
 PGH_SITE_ADDRESS=YOUR_DROPLET_PUBLIC_IP
+PGH_TLS_SERVER_NAME=YOUR_DROPLET_PUBLIC_IP
 PGH_FRONTEND_BASE_URL=https://YOUR_DROPLET_PUBLIC_IP
 FRONTEND_PORT=80
 HTTPS_PORT=443
@@ -106,13 +105,28 @@ HTTPS_PORT=443
 To test by public IP over plain HTTP instead, prefix the site address with `http://`:
 
 ```bash
-PGH_SERVER_NAME=_
 PGH_SITE_ADDRESS=http://YOUR_DROPLET_PUBLIC_IP
+PGH_TLS_SERVER_NAME=localhost
 PGH_FRONTEND_BASE_URL=http://YOUR_DROPLET_PUBLIC_IP
 ```
 
 For DigitalOcean firewall rules, allow public inbound `80` and `443`, restrict `22` to
 your IP, and keep `8080` and `5432` closed to the public internet.
+
+For password reset emails with Brevo, authenticate `pghpizza.org` in Brevo, add the DNS
+records Brevo gives you in Squarespace, create a sender like `no-reply@pghpizza.org`,
+then set:
+
+```bash
+SMTP_ENABLED=true
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=2525
+SMTP_USERNAME=your-brevo-smtp-login
+SMTP_PASSWORD=your-brevo-smtp-key
+SMTP_FROM=no-reply@pghpizza.org
+SMTP_AUTH=true
+SMTP_STARTTLS=false
+```
 
 Useful server checks:
 
