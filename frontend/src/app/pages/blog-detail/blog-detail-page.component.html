@@ -13,9 +13,22 @@
     <article class="content-block blog-post">
       <header>
         <p class="meta">
-          {{ currentPost.author }} · {{ currentPost.createdAt | date: 'mediumDate' }}
+          {{ currentPost.author }} - {{ currentPost.createdAt | date: 'mediumDate' }}
         </p>
         <h1>{{ currentPost.title }}</h1>
+        @if (canManage(currentPost)) {
+          <div class="row-actions">
+            <a class="button secondary" [routerLink]="['/blog', currentPost.slug, 'edit']">Edit</a>
+            <button
+              class="button danger"
+              type="button"
+              [disabled]="removing()"
+              (click)="removePost(currentPost)"
+            >
+              Remove
+            </button>
+          </div>
+        }
       </header>
 
       @if (embedUrl()) {

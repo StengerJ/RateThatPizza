@@ -33,19 +33,19 @@ public class ContributorApplicationController {
     }
 
     @GetMapping("/api/admin/applications")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@currentUserService.isCurrentActiveAdmin()")
     public List<ContributorApplicationResponse> listApplications() {
         return applicationService.listApplications();
     }
 
     @PostMapping("/api/admin/applications/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@currentUserService.isCurrentActiveAdmin()")
     public ContributorApplicationResponse approve(@PathVariable UUID id) {
         return applicationService.approve(id, currentUserService.requireCurrentUser());
     }
 
     @PostMapping("/api/admin/applications/{id}/reject")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@currentUserService.isCurrentActiveAdmin()")
     public ContributorApplicationResponse reject(@PathVariable UUID id) {
         return applicationService.reject(id, currentUserService.requireCurrentUser());
     }

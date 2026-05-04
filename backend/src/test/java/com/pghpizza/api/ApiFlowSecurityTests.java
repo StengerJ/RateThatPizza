@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -100,11 +101,30 @@ class ApiFlowSecurityTests {
                         "overallRating", 9,
                         "comments", "Great slice"))))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.creator").value("First Contributor"))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         String ratingId = objectMapper.readTree(ratingResponse).get("id").asText();
+
+        mockMvc.perform(get("/api/ratings/{id}", ratingId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.creator").value("First Contributor"));
+
+        mockMvc.perform(put("/api/ratings/{id}", ratingId)
+                .header("Authorization", "Bearer " + firstToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "restaurantName", "Driftwood Oven",
+                        "sauce", "Bright",
+                        "toppings", "Mushroom",
+                        "crust", "Wood fired",
+                        "overallRating", 9.5,
+                        "comments", "Great slice, edited"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.overallRating").value(9.5))
+                .andExpect(jsonPath("$.comments").value("Great slice, edited"));
 
         mockMvc.perform(delete("/api/ratings/{id}", ratingId)
                 .header("Authorization", "Bearer " + secondToken))
@@ -113,6 +133,152 @@ class ApiFlowSecurityTests {
         mockMvc.perform(delete("/api/ratings/{id}", ratingId)
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void adminsCanMonitorContributorsAndRemoveTheirContentAndAccess() throws Exception {
+        submitApplication("monitor@example.com", "Monitor Contributor", "MonitorPassword123!");
+
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+        approveFirstPendingApplication(adminToken);
+
+        String contributorToken = login("monitor@example.com", "MonitorPassword123!");
+
+        String ratingResponse = mockMvc.perform(post("/api/ratings")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "restaurantName", "Badamo's",
+                        "sauce", "Tangy",
+                        "toppings", "Cheese",
+                        "crust", "Thin",
+                        "overallRating", 8.5,
+                        "comments", "Worth logging"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.overallRating").value(8.5))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String blogPostResponse = mockMvc.perform(post("/api/blog-posts")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "title", "A good slice",
+                        "slug", "a-good-slice",
+                        "body", "A contributor note about pizza.",
+                        "youtubeUrl", "",
+                        "youtubeVideoId", ""))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.author").value("Monitor Contributor"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String ratingId = objectMapper.readTree(ratingResponse).get("id").asText();
+        String blogPostId = objectMapper.readTree(blogPostResponse).get("id").asText();
+
+        String contributorsResponse = mockMvc.perform(get("/api/admin/contributors")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].email").value("monitor@example.com"))
+                .andExpect(jsonPath("$[0].ratingCount").value(1))
+                .andExpect(jsonPath("$[0].blogPostCount").value(1))
+                .andExpect(jsonPath("$[0].ratings[0].restaurantName").value("Badamo's"))
+                .andExpect(jsonPath("$[0].ratings[0].overallRating").value(8.5))
+                .andExpect(jsonPath("$[0].blogPosts[0].title").value("A good slice"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String contributorId = objectMapper.readTree(contributorsResponse).get(0).get("id").asText();
+
+        mockMvc.perform(delete("/api/ratings/{id}", ratingId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/blog-posts/{id}", blogPostId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/admin/contributors")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].ratingCount").value(0))
+                .andExpect(jsonPath("$[0].blogPostCount").value(0));
+
+        mockMvc.perform(delete("/api/admin/contributors/{id}", contributorId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of("email", "monitor@example.com", "password", "MonitorPassword123!"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void adminsCanManageUserPermissionsAndAdminChecksUseCurrentDatabaseRole() throws Exception {
+        submitApplication("permissions@example.com", "Permissions User", "PermissionsPassword123!");
+
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+        approveFirstPendingApplication(adminToken);
+
+        String contributorToken = login("permissions@example.com", "PermissionsPassword123!");
+
+        mockMvc.perform(get("/api/admin/users")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isForbidden());
+
+        String usersResponse = mockMvc.perform(get("/api/admin/users")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode users = objectMapper.readTree(usersResponse);
+        String userId = findUserByEmail(users, "permissions@example.com").get("id").asText();
+        String adminId = findUserByEmail(users, "admin@pgh-pizza.local").get("id").asText();
+
+        mockMvc.perform(put("/api/admin/users/{id}/role", adminId)
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of("role", "CONTRIBUTOR"))))
+                .andExpect(status().isConflict());
+
+        mockMvc.perform(put("/api/admin/users/{id}/role", userId)
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of("role", "ADMIN"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("ADMIN"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        mockMvc.perform(get("/api/auth/me")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("ADMIN"));
+
+        mockMvc.perform(get("/api/admin/users")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(put("/api/admin/users/{id}/role", userId)
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of("role", "CONTRIBUTOR"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("CONTRIBUTOR"));
+
+        mockMvc.perform(get("/api/auth/me")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("CONTRIBUTOR"));
+
+        mockMvc.perform(get("/api/admin/users")
+                .header("Authorization", "Bearer " + contributorToken))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -203,6 +369,16 @@ class ApiFlowSecurityTests {
         mockMvc.perform(post("/api/admin/applications/{id}/approve", pendingId)
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
+    }
+
+    private JsonNode findUserByEmail(JsonNode users, String email) {
+        for (JsonNode user : users) {
+            if (email.equals(user.get("email").asText())) {
+                return user;
+            }
+        }
+
+        throw new AssertionError("User not found: " + email);
     }
 
     private String json(Object value) throws Exception {

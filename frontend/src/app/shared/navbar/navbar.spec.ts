@@ -41,4 +41,17 @@ describe('Navbar', () => {
     expect(linkText).toContain('About');
     expect(linkText).toContain('Login');
   });
+
+  it('should order primary navigation links by site sections first', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const primaryLinks = Array.from(compiled.querySelectorAll('.navbar-links a')).map((link) =>
+      link.textContent?.trim()
+    );
+
+    expect(primaryLinks.slice(0, 4)).toEqual(['Home', 'About', 'Blog', 'Ratings']);
+  });
+
+  it('should only show apply to logged out visitors', () => {
+    expect(component.canApply()).toBeTrue();
+  });
 });

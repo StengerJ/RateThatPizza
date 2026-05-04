@@ -1,3 +1,25 @@
 .table-wrap {
   box-shadow: var(--shadow);
 }
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row-actions .button {
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
+@media (max-width: 640px) {
+  .table-wrap {
+    box-shadow: none;
+  }
+
+  .row-actions,
+  .row-actions .button {
+    width: 100%;
+  }
+}

@@ -1,17 +1,25 @@
 <section class="page">
   <header class="page-header">
     <div>
-      <h1>Contributor applications</h1>
-      <p>Admins can approve or reject pending contributor accounts.</p>
+      <h1>Admin</h1>
+      <p>Review pending contributors and manage active contributor content.</p>
     </div>
   </header>
 
-  @if (loading()) {
-    <p class="status">Loading applications...</p>
-  }
-
   @if (errorMessage()) {
     <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  @if (successMessage()) {
+    <p class="status success">{{ successMessage() }}</p>
+  }
+
+  <div class="section-heading">
+    <h2>Contributor applications</h2>
+  </div>
+
+  @if (loadingApplications()) {
+    <p class="status">Loading applications...</p>
   }
 
   <div class="table-wrap">
@@ -27,24 +35,24 @@
         </tr>
       </thead>
       <tbody>
-        @if (!loading() && applications().length === 0) {
+        @if (!loadingApplications() && pendingApplications().length === 0) {
           <tr>
             <td colspan="6" class="empty">No applications are waiting for review.</td>
           </tr>
         } @else {
-          @for (application of applications(); track application.id) {
+          @for (application of pendingApplications(); track application.id) {
             <tr>
-              <td>{{ application.displayName }}</td>
-              <td>{{ application.email }}</td>
-              <td>{{ application.applicationReason }}</td>
-              <td>{{ application.status }}</td>
-              <td>{{ application.createdAt | date: 'mediumDate' }}</td>
-              <td>
+              <td data-label="Applicant">{{ application.displayName }}</td>
+              <td data-label="Email">{{ application.email }}</td>
+              <td data-label="Reason">{{ application.applicationReason }}</td>
+              <td data-label="Status">{{ application.status }}</td>
+              <td data-label="Submitted">{{ application.createdAt | date: 'mediumDate' }}</td>
+              <td data-label="Actions">
                 <div class="row-actions">
                   <button
                     class="button primary"
                     type="button"
-                    [disabled]="application.status !== 'PENDING' || isProcessing(application.id)"
+                    [disabled]="isProcessing(actionKey('application', application.id))"
                     (click)="approve(application)"
                   >
                     Approve
@@ -52,12 +60,187 @@
                   <button
                     class="button danger"
                     type="button"
-                    [disabled]="application.status !== 'PENDING' || isProcessing(application.id)"
+                    [disabled]="isProcessing(actionKey('application', application.id))"
                     (click)="reject(application)"
                   >
                     Reject
                   </button>
                 </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-heading">
+    <h2>User permissions</h2>
+  </div>
+
+  @if (loadingUsers()) {
+    <p class="status">Loading users...</p>
+  }
+
+  <div class="table-wrap permissions-table">
+    <table aria-label="User permissions table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th>Permissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!loadingUsers() && users().length === 0) {
+          <tr>
+            <td colspan="5" class="empty">No active users are available.</td>
+          </tr>
+        } @else {
+          @for (user of users(); track user.id) {
+            <tr>
+              <td data-label="User">
+                <strong>{{ user.displayName }}</strong>
+                <span class="subtle">{{ user.email }}</span>
+              </td>
+              <td data-label="Role">
+                <span class="role-badge">{{ roleLabel(user.role) }}</span>
+              </td>
+              <td data-label="Status">{{ user.status }}</td>
+              <td data-label="Joined">{{ user.createdAt | date: 'mediumDate' }}</td>
+              <td data-label="Permissions">
+                <div class="row-actions">
+                  <button
+                    class="button primary"
+                    type="button"
+                    [disabled]="
+                      user.role === 'ADMIN' ||
+                      isCurrentUser(user) ||
+                      isProcessing(actionKey('user-role', user.id))
+                    "
+                    (click)="setUserRole(user, 'ADMIN')"
+                  >
+                    Make admin
+                  </button>
+                  <button
+                    class="button"
+                    type="button"
+                    [disabled]="
+                      user.role === 'CONTRIBUTOR' ||
+                      isCurrentUser(user) ||
+                      isProcessing(actionKey('user-role', user.id))
+                    "
+                    (click)="setUserRole(user, 'CONTRIBUTOR')"
+                  >
+                    Make contributor
+                  </button>
+                </div>
+                @if (isCurrentUser(user)) {
+                  <span class="subtle">Current admin</span>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-heading">
+    <h2>Current contributors</h2>
+  </div>
+
+  @if (loadingContributors()) {
+    <p class="status">Loading contributors...</p>
+  }
+
+  <div class="table-wrap contributors-table">
+    <table aria-label="Current contributors table">
+      <thead>
+        <tr>
+          <th>Contributor</th>
+          <th>Ratings</th>
+          <th>Blog posts</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!loadingContributors() && contributors().length === 0) {
+          <tr>
+            <td colspan="5" class="empty">No active contributors are available.</td>
+          </tr>
+        } @else {
+          @for (contributor of contributors(); track contributor.id) {
+            <tr>
+              <td data-label="Contributor">
+                <strong>{{ contributor.displayName }}</strong>
+                <span class="subtle">{{ contributor.email }}</span>
+              </td>
+              <td data-label="Ratings">
+                <strong class="count">{{ contributor.ratingCount }}</strong>
+                @if (contributor.ratings.length === 0) {
+                  <p class="empty inline-empty">No ratings posted.</p>
+                } @else {
+                  <ul class="content-list">
+                    @for (rating of contributor.ratings; track rating.id) {
+                      <li>
+                        <div>
+                          <strong>{{ rating.restaurantName }}</strong>
+                          <span class="subtle">
+                            {{ rating.overallRating }}/10 - {{ rating.createdAt | date: 'mediumDate' }}
+                          </span>
+                        </div>
+                        <button
+                          class="button danger compact"
+                          type="button"
+                          [disabled]="isProcessing(actionKey('rating', rating.id))"
+                          (click)="removeRating(contributor, rating)"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+              </td>
+              <td data-label="Blog posts">
+                <strong class="count">{{ contributor.blogPostCount }}</strong>
+                @if (contributor.blogPosts.length === 0) {
+                  <p class="empty inline-empty">No blog posts published.</p>
+                } @else {
+                  <ul class="content-list">
+                    @for (post of contributor.blogPosts; track post.id) {
+                      <li>
+                        <div>
+                          <strong>{{ post.title }}</strong>
+                          <span class="subtle">{{ post.createdAt | date: 'mediumDate' }}</span>
+                        </div>
+                        <button
+                          class="button danger compact"
+                          type="button"
+                          [disabled]="isProcessing(actionKey('blog', post.id))"
+                          (click)="removeBlogPost(contributor, post)"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+              </td>
+              <td data-label="Joined">{{ contributor.createdAt | date: 'mediumDate' }}</td>
+              <td data-label="Actions">
+                <button
+                  class="button danger"
+                  type="button"
+                  [disabled]="isProcessing(actionKey('contributor', contributor.id))"
+                  (click)="disableContributor(contributor)"
+                >
+                  Remove contributor
+                </button>
               </td>
             </tr>
           }

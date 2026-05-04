@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { AuthResponse, AuthSession, LoginRequest, UserRole } from '../models/user.model';
+import { AuthResponse, AuthSession, LoginRequest, User, UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,8 +38,29 @@ export class AuthService {
   }
 
   hasAnyRole(roles: readonly UserRole[]): boolean {
-    const role = this.currentUser()?.role;
-    return role ? roles.includes(role) : false;
+    const user = this.currentUser();
+    return user?.status === 'ACTIVE' && roles.includes(user.role);
+  }
+
+  refreshCurrentUser(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/auth/me`).pipe(
+      tap((user) => {
+        const session = this.sessionSignal();
+        if (!session) {
+          return;
+        }
+
+        if (user.status === 'DISABLED' || user.status === 'REJECTED') {
+          this.logout();
+          return;
+        }
+
+        this.persistSession({
+          ...session,
+          user
+        });
+      })
+    );
   }
 
   requestPasswordReset(email: string): Observable<void> {

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BlogPostRepository extends JpaRepository<BlogPostEntity, UUID> {
     List<BlogPostEntity> findAllByOrderByCreatedAtDesc();
 
+    List<BlogPostEntity> findAllByAuthor_IdOrderByCreatedAtDesc(UUID authorId);
+
     Optional<BlogPostEntity> findBySlug(String slug);
 
     boolean existsBySlug(String slug);

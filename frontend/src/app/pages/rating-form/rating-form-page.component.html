@@ -1,14 +1,18 @@
 <section class="page narrow-page">
   <header class="page-header">
     <div>
-      <h1>Add rating</h1>
-      <p>Approved contributors can share new pizza ratings with the PGH-Pizza community.</p>
+      <h1>{{ editing() ? 'Edit rating' : 'Add rating' }}</h1>
+      <p>Approved contributors can share and maintain pizza ratings with the PGH-Pizza community.</p>
     </div>
     <a class="button secondary" routerLink="/ratings">Back to ratings</a>
   </header>
 
   @if (errorMessage()) {
     <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="status">Loading rating...</p>
   }
 
   <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
@@ -49,9 +53,9 @@
 
       <div class="field">
         <label for="overallRating">Overall rating</label>
-        <input id="overallRating" type="number" min="1" max="10" formControlName="overallRating">
+        <input id="overallRating" type="number" min="1" max="10" step="0.01" formControlName="overallRating">
         @if (form.controls.overallRating.touched && form.controls.overallRating.invalid) {
-          <small>Use a number from 1 to 10.</small>
+          <small>Use a number from 1 to 10, decimals allowed.</small>
         }
       </div>
     </div>
@@ -65,7 +69,7 @@
     </div>
 
     <button class="button primary" type="submit" [disabled]="submitting()">
-      {{ submitting() ? 'Saving...' : 'Publish rating' }}
+      {{ submitting() ? 'Saving...' : editing() ? 'Save rating' : 'Publish rating' }}
     </button>
   </form>
 </section>

@@ -20,6 +20,8 @@ export class BlogListPage implements OnInit {
 
   readonly posts = signal<BlogPost[]>([]);
   readonly loading = signal(true);
+  readonly errorMessage = signal('');
+  readonly processingIds = signal<Set<string>>(new Set());
 
   ngOnInit(): void {
     this.blogService
@@ -35,7 +37,52 @@ export class BlogListPage implements OnInit {
     return this.auth.hasAnyRole(['CONTRIBUTOR', 'ADMIN']);
   }
 
+  canManage(post: BlogPost): boolean {
+    const user = this.auth.currentUser();
+    return Boolean(user && (user.role === 'ADMIN' || user.id === post.authorId));
+  }
+
+  isProcessing(id?: string): boolean {
+    return id ? this.processingIds().has(id) : false;
+  }
+
+  removePost(post: BlogPost): void {
+    const postId = post.id;
+
+    if (!postId || !confirm(`Remove ${post.title}?`)) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.setProcessing(postId, true);
+
+    this.blogService.deletePost(postId).subscribe({
+      next: () => {
+        this.posts.update((posts) =>
+          posts.filter((currentPost) => currentPost.id !== postId)
+        );
+        this.setProcessing(postId, false);
+      },
+      error: () => {
+        this.errorMessage.set('Blog post could not be removed.');
+        this.setProcessing(postId, false);
+      }
+    });
+  }
+
   excerpt(post: BlogPost): string {
     return post.body.length > 180 ? `${post.body.slice(0, 180)}...` : post.body;
+  }
+
+  private setProcessing(id: string, processing: boolean): void {
+    const nextIds = new Set(this.processingIds());
+
+    if (processing) {
+      nextIds.add(id);
+    } else {
+      nextIds.delete(id);
+    }
+
+    this.processingIds.set(nextIds);
   }
 }

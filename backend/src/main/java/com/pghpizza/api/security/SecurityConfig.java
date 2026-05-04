@@ -43,7 +43,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/ratings", "/api/blog-posts", "/api/blog-posts/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ratings", "/api/ratings/*",
+                                "/api/blog-posts", "/api/blog-posts/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/applications", "/api/auth/login",
                                 "/api/auth/password-reset/request", "/api/auth/password-reset/confirm",
                                 "/api/client-logs").permitAll()

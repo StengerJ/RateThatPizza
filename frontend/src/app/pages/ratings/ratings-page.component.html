@@ -14,6 +14,10 @@
     <p class="status">Loading ratings...</p>
   }
 
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
   <div class="table-wrap">
     <table aria-label="Pizza ratings table">
       <thead>
@@ -23,23 +27,43 @@
           <th>Toppings</th>
           <th>Crust</th>
           <th>Overall Rating</th>
+          <th>Contributor</th>
           <th>Comments</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         @if (!loading() && ratings().length === 0) {
           <tr>
-            <td colspan="6" class="empty">No ratings are available yet.</td>
+            <td colspan="8" class="empty">No ratings are available yet.</td>
           </tr>
         } @else {
           @for (rating of ratings(); track rating.id ?? rating.restaurantName) {
             <tr>
-              <td>{{ rating.restaurantName }}</td>
-              <td>{{ rating.sauce }}</td>
-              <td>{{ rating.toppings }}</td>
-              <td>{{ rating.crust }}</td>
-              <td>{{ rating.overallRating }}</td>
-              <td>{{ rating.comments }}</td>
+              <td data-label="Restaurant">{{ rating.restaurantName }}</td>
+              <td data-label="Sauce">{{ rating.sauce }}</td>
+              <td data-label="Toppings">{{ rating.toppings }}</td>
+              <td data-label="Crust">{{ rating.crust }}</td>
+              <td data-label="Rating">{{ rating.overallRating }}</td>
+              <td data-label="Contributor">{{ rating.creator }}</td>
+              <td data-label="Comments">{{ rating.comments }}</td>
+              @if (canManage(rating)) {
+                <td data-label="Actions">
+                  <div class="row-actions">
+                    <a class="button secondary" [routerLink]="['/ratings', rating.id, 'edit']">Edit</a>
+                    <button
+                      class="button danger"
+                      type="button"
+                      [disabled]="isProcessing(rating.id)"
+                      (click)="removeRating(rating)"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </td>
+              } @else {
+                <td class="desktop-only"></td>
+              }
             </tr>
           }
         }

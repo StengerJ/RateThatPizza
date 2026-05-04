@@ -1,14 +1,18 @@
 <section class="page narrow-page">
   <header class="page-header">
     <div>
-      <h1>New blog post</h1>
-      <p>Add a contributor post with an optional YouTube video.</p>
+      <h1>{{ editing() ? 'Edit blog post' : 'New blog post' }}</h1>
+      <p>Maintain a contributor post with an optional YouTube video.</p>
     </div>
     <a class="button secondary" routerLink="/blog">Back to blog</a>
   </header>
 
   @if (errorMessage()) {
     <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="status">Loading post...</p>
   }
 
   <form class="form-panel" [formGroup]="form" (ngSubmit)="submit()">
@@ -39,7 +43,7 @@
     </div>
 
     <button class="button primary" type="submit" [disabled]="submitting()">
-      {{ submitting() ? 'Publishing...' : 'Publish post' }}
+      {{ submitting() ? 'Saving...' : editing() ? 'Save post' : 'Publish post' }}
     </button>
   </form>
 </section>

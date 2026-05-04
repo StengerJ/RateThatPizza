@@ -16,6 +16,10 @@ export class RatingsService {
     return this.http.get<Rating[]>(`${this.apiUrl}/ratings`);
   }
 
+  getRating(id: string): Observable<Rating> {
+    return this.http.get<Rating>(`${this.apiUrl}/ratings/${encodeURIComponent(id)}`);
+  }
+
   createRating(request: RatingCreateRequest): Observable<Rating> {
     return this.http.post<Rating>(`${this.apiUrl}/ratings`, request);
   }

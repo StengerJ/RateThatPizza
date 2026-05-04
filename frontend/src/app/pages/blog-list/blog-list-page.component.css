@@ -22,3 +22,29 @@
   color: var(--muted);
   line-height: 1.6;
 }
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row-actions .button {
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
+@media (max-width: 520px) {
+  .post-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .post-card {
+    padding: 16px;
+  }
+
+  .row-actions,
+  .row-actions .button {
+    width: 100%;
+  }
+}

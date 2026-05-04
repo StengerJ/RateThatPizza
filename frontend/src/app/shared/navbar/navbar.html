@@ -3,10 +3,9 @@
 
   <div class="navbar-links">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-    <a routerLink="/ratings" routerLinkActive="active">Ratings</a>
-    <a routerLink="/blog" routerLinkActive="active">Blog</a>
-    <a routerLink="/apply" routerLinkActive="active">Apply</a>
     <a routerLink="/about-me" routerLinkActive="active">About</a>
+    <a routerLink="/blog" routerLinkActive="active">Blog</a>
+    <a routerLink="/ratings" routerLinkActive="active">Ratings</a>
 
     @if (canContribute()) {
       <a routerLink="/ratings/new" routerLinkActive="active">Add rating</a>
@@ -23,6 +22,7 @@
       <span>{{ auth.currentUser()?.displayName }}</span>
       <button type="button" class="link-button" (click)="logout()">Logout</button>
     } @else {
+      <a routerLink="/apply" routerLinkActive="active">Apply</a>
       <a routerLink="/login" routerLinkActive="active">Login</a>
     }
   </div>

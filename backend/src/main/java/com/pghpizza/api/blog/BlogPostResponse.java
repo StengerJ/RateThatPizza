@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record BlogPostResponse(
         UUID id,
+        UUID authorId,
         String title,
         String slug,
         String body,
@@ -16,6 +17,7 @@ public record BlogPostResponse(
     public static BlogPostResponse from(BlogPostEntity post) {
         return new BlogPostResponse(
                 post.getId(),
+                post.getAuthor().getId(),
                 post.getTitle(),
                 post.getSlug(),
                 post.getBody(),

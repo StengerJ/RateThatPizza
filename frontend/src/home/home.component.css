@@ -79,11 +79,32 @@ h1 {
 
 @media (max-width: 760px) {
   .hero {
+    gap: 28px;
     grid-template-columns: 1fr;
-    padding-top: 40px;
+    padding-top: 32px;
   }
 
   .feature-strip {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero,
+  .feature-strip {
+    width: min(100% - 24px, 1120px);
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  .lede {
+    font-size: 1rem;
+  }
+
+  .actions,
+  .actions .button {
+    width: 100%;
   }
 }

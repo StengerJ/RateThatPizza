@@ -1,5 +1,6 @@
 package com.pghpizza.api.rating;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -40,8 +41,8 @@ public class RatingEntity {
     @Column(nullable = false, length = 120)
     private String crust;
 
-    @Column(name = "overall_rating", nullable = false)
-    private int overallRating;
+    @Column(name = "overall_rating", nullable = false, precision = 4, scale = 2)
+    private BigDecimal overallRating;
 
     @Column(nullable = false)
     private String comments;
@@ -108,11 +109,11 @@ public class RatingEntity {
         this.crust = crust;
     }
 
-    public int getOverallRating() {
+    public BigDecimal getOverallRating() {
         return overallRating;
     }
 
-    public void setOverallRating(int overallRating) {
+    public void setOverallRating(BigDecimal overallRating) {
         this.overallRating = overallRating;
     }
 

@@ -28,6 +28,13 @@ public class RatingService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public RatingResponse getRating(UUID id) {
+        return ratingRepository.findById(id)
+                .map(RatingResponse::from)
+                .orElseThrow(() -> new NotFoundException("Rating not found"));
+    }
+
     @Transactional
     public RatingResponse createRating(RatingRequest request, UserEntity user) {
         requirePublisher(user);
@@ -73,6 +80,10 @@ public class RatingService {
     }
 
     private void requireOwnerOrAdmin(RatingEntity rating, UserEntity user) {
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new ForbiddenActionException("User cannot modify this rating");
+        }
+
         if (user.getRole() != UserRole.ADMIN && !rating.getCreator().getId().equals(user.getId())) {
             throw new ForbiddenActionException("User cannot modify this rating");
         }

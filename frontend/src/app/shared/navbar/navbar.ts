@@ -17,6 +17,10 @@ export class Navbar {
     return this.auth.hasAnyRole(['CONTRIBUTOR', 'ADMIN']);
   }
 
+  canApply(): boolean {
+    return !this.auth.isLoggedIn();
+  }
+
   canAdmin(): boolean {
     return this.auth.hasAnyRole(['ADMIN']);
   }

@@ -1,3 +1,14 @@
+.section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-heading h2 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;
@@ -7,4 +18,87 @@
 .row-actions .button {
   min-height: 36px;
   padding: 6px 10px;
+}
+
+.contributors-table table {
+  min-width: 1120px;
+}
+
+.permissions-table table {
+  min-width: 900px;
+}
+
+.role-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ink);
+  display: inline-flex;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.subtle {
+  color: var(--muted);
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.count {
+  color: var(--ink);
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.content-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.content-list li {
+  align-items: flex-start;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-top: 10px;
+}
+
+.button.compact {
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+.inline-empty {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .section-heading {
+    align-items: flex-start;
+    display: grid;
+  }
+
+  .contributors-table table,
+  .permissions-table table {
+    min-width: 0;
+  }
+
+  .row-actions,
+  .row-actions .button,
+  .button.danger:not(.compact) {
+    width: 100%;
+  }
+
+  .content-list li {
+    grid-template-columns: 1fr;
+  }
+
+  .button.compact {
+    width: 100%;
+  }
 }

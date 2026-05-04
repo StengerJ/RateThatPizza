@@ -33,6 +33,11 @@ public class RatingController {
         return ratingService.listRatings();
     }
 
+    @GetMapping("/{id}")
+    public RatingResponse getRating(@PathVariable UUID id) {
+        return ratingService.getRating(id);
+    }
+
     @PostMapping
     public RatingResponse createRating(@Valid @RequestBody RatingRequest request) {
         return ratingService.createRating(request, currentUserService.requireCurrentUser());

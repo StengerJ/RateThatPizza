@@ -55,7 +55,9 @@ describe('RatingsPage', () => {
       'Toppings',
       'Crust',
       'Overall Rating',
-      'Comments'
+      'Contributor',
+      'Comments',
+      'Actions'
     ]);
   });
 

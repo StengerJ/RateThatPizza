@@ -13,6 +13,18 @@
   margin: 8px 0 0;
 }
 
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.row-actions .button {
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
 .video-frame {
   aspect-ratio: 16 / 9;
   background: var(--palette-dark);
@@ -31,4 +43,12 @@
   line-height: 1.8;
   margin: 0;
   white-space: pre-line;
+}
+
+@media (max-width: 520px) {
+  .row-actions,
+  .row-actions .button,
+  .back-link {
+    width: 100%;
+  }
 }

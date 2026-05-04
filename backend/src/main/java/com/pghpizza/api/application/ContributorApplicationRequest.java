@@ -8,6 +8,6 @@ public record ContributorApplicationRequest(
         @Email @NotBlank @Size(max = 320) String email,
         @NotBlank @Size(min = 2, max = 120) String displayName,
         @NotBlank @Size(min = 8, max = 128) String password,
-        @NotBlank @Size(min = 20, max = 5000) String applicationReason
+        @NotBlank @Size(min = 5, max = 5000) String applicationReason
 ) {
 }

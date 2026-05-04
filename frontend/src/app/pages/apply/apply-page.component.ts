@@ -19,7 +19,7 @@ export class ApplyPage {
     displayName: ['', [Validators.required, Validators.minLength(2)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]],
-    applicationReason: ['', [Validators.required, Validators.minLength(20)]]
+    applicationReason: ['', [Validators.required, Validators.minLength(5)]]
   });
 
   readonly submitted = signal(false);

@@ -93,6 +93,10 @@ public class BlogPostService {
     }
 
     private void requireOwnerOrAdmin(BlogPostEntity post, UserEntity user) {
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new ForbiddenActionException("User cannot modify this blog post");
+        }
+
         if (user.getRole() != UserRole.ADMIN && !post.getAuthor().getId().equals(user.getId())) {
             throw new ForbiddenActionException("User cannot modify this blog post");
         }

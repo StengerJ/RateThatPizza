@@ -1,5 +1,7 @@
 export interface Rating {
   id?: string;
+  creatorId?: string;
+  creator?: string;
   restaurantName: string;
   sauce: string;
   toppings: string;
@@ -9,4 +11,4 @@ export interface Rating {
   createdAt?: string;
 }
 
-export type RatingCreateRequest = Omit<Rating, 'id' | 'createdAt'>;
+export type RatingCreateRequest = Omit<Rating, 'id' | 'creatorId' | 'creator' | 'createdAt'>;

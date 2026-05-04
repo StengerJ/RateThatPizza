@@ -19,6 +19,8 @@ export class RatingsPage implements OnInit {
 
   readonly ratings = signal<Rating[]>([]);
   readonly loading = signal(true);
+  readonly errorMessage = signal('');
+  readonly processingIds = signal<Set<string>>(new Set());
 
   ngOnInit(): void {
     this.ratingsService
@@ -32,5 +34,50 @@ export class RatingsPage implements OnInit {
 
   canCreate(): boolean {
     return this.auth.hasAnyRole(['CONTRIBUTOR', 'ADMIN']);
+  }
+
+  canManage(rating: Rating): boolean {
+    const user = this.auth.currentUser();
+    return Boolean(user && (user.role === 'ADMIN' || user.id === rating.creatorId));
+  }
+
+  isProcessing(id?: string): boolean {
+    return id ? this.processingIds().has(id) : false;
+  }
+
+  removeRating(rating: Rating): void {
+    const ratingId = rating.id;
+
+    if (!ratingId || !confirm(`Remove ${rating.restaurantName}?`)) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.setProcessing(ratingId, true);
+
+    this.ratingsService.deleteRating(ratingId).subscribe({
+      next: () => {
+        this.ratings.update((ratings) =>
+          ratings.filter((currentRating) => currentRating.id !== ratingId)
+        );
+        this.setProcessing(ratingId, false);
+      },
+      error: () => {
+        this.errorMessage.set('Rating could not be removed.');
+        this.setProcessing(ratingId, false);
+      }
+    });
+  }
+
+  private setProcessing(id: string, processing: boolean): void {
+    const nextIds = new Set(this.processingIds());
+
+    if (processing) {
+      nextIds.add(id);
+    } else {
+      nextIds.delete(id);
+    }
+
+    this.processingIds.set(nextIds);
   }
 }

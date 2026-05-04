@@ -1,0 +1,1 @@
+ALTER TABLE ratings ALTER COLUMN overall_rating TYPE NUMERIC(4,2);

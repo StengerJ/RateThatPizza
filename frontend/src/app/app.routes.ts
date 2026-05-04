@@ -26,6 +26,12 @@ export const routes: Routes = [
     title: 'Add Rating | PGH-Pizza'
   },
   {
+    path: 'ratings/:id/edit',
+    component: RatingFormPage,
+    canActivate: [contributorGuard],
+    title: 'Edit Rating | PGH-Pizza'
+  },
+  {
     path: 'ratings',
     component: RatingsPage,
     title: 'Pizza Ratings | PGH-Pizza'
@@ -45,6 +51,12 @@ export const routes: Routes = [
     component: BlogFormPage,
     canActivate: [contributorGuard],
     title: 'New Blog Post | PGH-Pizza'
+  },
+  {
+    path: 'blog/:slug/edit',
+    component: BlogFormPage,
+    canActivate: [contributorGuard],
+    title: 'Edit Blog Post | PGH-Pizza'
   },
   {
     path: 'blog/:slug',
