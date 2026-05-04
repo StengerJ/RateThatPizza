@@ -1,10 +1,35 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Rating } from '../../core/models/rating.model';
 import { AuthService } from '../../core/services/auth.service';
 import { RatingsService } from '../../core/services/ratings.service';
+
+type RatingFilterKey =
+  | 'restaurantName'
+  | 'location'
+  | 'sauce'
+  | 'toppings'
+  | 'crust'
+  | 'overallRating'
+  | 'affordabilityRating'
+  | 'creator'
+  | 'comments';
+
+type RatingFilters = Record<RatingFilterKey, string>;
+
+const emptyFilters: RatingFilters = {
+  restaurantName: '',
+  location: '',
+  sauce: '',
+  toppings: '',
+  crust: '',
+  overallRating: '',
+  affordabilityRating: '',
+  creator: '',
+  comments: ''
+};
 
 @Component({
   selector: 'app-ratings-page',
@@ -21,6 +46,29 @@ export class RatingsPage implements OnInit {
   readonly loading = signal(true);
   readonly errorMessage = signal('');
   readonly processingIds = signal<Set<string>>(new Set());
+  readonly filters = signal<RatingFilters>({ ...emptyFilters });
+
+  readonly hasActiveFilters = computed(() =>
+    Object.values(this.filters()).some((value) => value.trim().length > 0)
+  );
+
+  readonly restaurantFilterOptions = computed(() => this.uniqueFilterOptions('restaurantName'));
+  readonly locationFilterOptions = computed(() => this.uniqueFilterOptions('location'));
+  readonly contributorFilterOptions = computed(() => this.uniqueFilterOptions('creator'));
+
+  readonly filteredRatings = computed(() => {
+    const activeFilters = Object.entries(this.filters())
+      .map(([key, value]) => [key as RatingFilterKey, value.trim().toLowerCase()] as const)
+      .filter(([, value]) => value.length > 0);
+
+    if (activeFilters.length === 0) {
+      return this.ratings();
+    }
+
+    return this.ratings().filter((rating) =>
+      activeFilters.every(([key, value]) => this.filterValue(rating, key).includes(value))
+    );
+  });
 
   ngOnInit(): void {
     this.ratingsService
@@ -43,6 +91,15 @@ export class RatingsPage implements OnInit {
 
   showActionsColumn(): boolean {
     return this.auth.isLoggedIn();
+  }
+
+  setFilter(key: RatingFilterKey, event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.filters.update((filters) => ({ ...filters, [key]: value }));
+  }
+
+  clearFilters(): void {
+    this.filters.set({ ...emptyFilters });
   }
 
   isProcessing(id?: string): boolean {
@@ -83,5 +140,31 @@ export class RatingsPage implements OnInit {
     }
 
     this.processingIds.set(nextIds);
+  }
+
+  private filterValue(rating: Rating, key: RatingFilterKey): string {
+    const values: Record<RatingFilterKey, string | number | undefined> = {
+      restaurantName: rating.restaurantName,
+      location: rating.location,
+      sauce: rating.sauce,
+      toppings: rating.toppings,
+      crust: rating.crust,
+      overallRating: rating.overallRating,
+      affordabilityRating: rating.affordabilityRating,
+      creator: rating.creator,
+      comments: rating.comments
+    };
+
+    return String(values[key] ?? '').toLowerCase();
+  }
+
+  private uniqueFilterOptions(key: 'restaurantName' | 'location' | 'creator'): string[] {
+    return Array.from(
+      new Set(
+        this.ratings()
+          .map((rating) => String(rating[key] ?? '').trim())
+          .filter(Boolean)
+      )
+    ).sort((first, second) => first.localeCompare(second));
   }
 }

@@ -75,4 +75,62 @@ describe('RatingsPage', () => {
     expect(nativeElement.querySelector('.status.error')).toBeNull();
     expect(nativeElement.textContent).toContain('No ratings are available yet.');
   });
+
+  it('should filter ratings and provide autofill options for key columns', () => {
+    fixture.detectChanges();
+    httpTesting.expectOne('/api/ratings').flush([
+      {
+        id: '1',
+        creatorId: 'user-1',
+        creator: 'Joshua Stenger',
+        restaurantName: 'Fiori Pizza',
+        location: 'Brookline',
+        sauce: 'Sweet',
+        toppings: 'Pepperoni',
+        crust: 'Crisp',
+        overallRating: 9.1,
+        affordabilityRating: 8.5,
+        comments: 'Classic Pittsburgh slice'
+      },
+      {
+        id: '2',
+        creatorId: 'user-2',
+        creator: 'Tema',
+        restaurantName: 'Mineo Pizza',
+        location: 'Squirrel Hill',
+        sauce: 'Tangy',
+        toppings: 'Mushroom',
+        crust: 'Chewy',
+        overallRating: 8.2,
+        affordabilityRating: 7,
+        comments: 'Great stop'
+      }
+    ]);
+    fixture.detectChanges();
+
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const restaurantInput = nativeElement.querySelector<HTMLInputElement>('#ratingFilterRestaurant');
+    expect(restaurantInput).not.toBeNull();
+
+    restaurantInput!.value = 'fiori';
+    restaurantInput!.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    expect(nativeElement.textContent).toContain('Fiori Pizza');
+    expect(nativeElement.textContent).not.toContain('Mineo Pizza');
+
+    const restaurantOptions = Array.from(
+      nativeElement.querySelectorAll<HTMLOptionElement>('#ratingRestaurantOptions option')
+    ).map((option) => option.value);
+    const locationOptions = Array.from(
+      nativeElement.querySelectorAll<HTMLOptionElement>('#ratingLocationOptions option')
+    ).map((option) => option.value);
+    const contributorOptions = Array.from(
+      nativeElement.querySelectorAll<HTMLOptionElement>('#ratingContributorOptions option')
+    ).map((option) => option.value);
+
+    expect(restaurantOptions).toContain('Fiori Pizza');
+    expect(locationOptions).toContain('Brookline');
+    expect(contributorOptions).toContain('Joshua Stenger');
+  });
 });
