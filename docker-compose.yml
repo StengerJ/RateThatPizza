@@ -1,4 +1,20 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: pgh-pizza-caddy
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    environment:
+      PGH_SITE_ADDRESS: ${PGH_SITE_ADDRESS:-http://localhost}
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - pgh-pizza-caddy-data:/data
+      - pgh-pizza-caddy-config:/config
+
   postgres:
     image: postgres:16-alpine
     container_name: pgh-pizza-postgres
@@ -7,8 +23,8 @@ services:
       POSTGRES_DB: ${PGH_POSTGRES_DB:-pgh_pizza}
       POSTGRES_USER: ${PGH_POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${PGH_POSTGRES_PASSWORD:-postgres}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+    expose:
+      - "5432"
     volumes:
       - pgh-pizza-postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -29,11 +45,15 @@ services:
       PGH_DB_URL: jdbc:postgresql://postgres:5432/${PGH_POSTGRES_DB:-pgh_pizza}
       PGH_DB_USERNAME: ${PGH_POSTGRES_USER:-postgres}
       PGH_DB_PASSWORD: ${PGH_POSTGRES_PASSWORD:-postgres}
-      PGH_FRONTEND_BASE_URL: ${PGH_FRONTEND_BASE_URL:-http://localhost:4200}
+      PGH_FRONTEND_BASE_URL: ${PGH_FRONTEND_BASE_URL:-http://localhost}
+      PGH_JWT_ISSUER: ${PGH_JWT_ISSUER:-pgh-pizza-api}
       PGH_JWT_SECRET: ${PGH_JWT_SECRET:-local-development-secret-change-me-local-development-secret}
+      PGH_JWT_EXPIRES_MINUTES: ${PGH_JWT_EXPIRES_MINUTES:-120}
       PGH_ADMIN_EMAIL: ${PGH_ADMIN_EMAIL:-admin@pgh-pizza.local}
       PGH_ADMIN_PASSWORD: ${PGH_ADMIN_PASSWORD:-ChangeMe123!}
       PGH_ADMIN_DISPLAY_NAME: ${PGH_ADMIN_DISPLAY_NAME:-PGH Admin}
+      SERVER_ADDRESS: ${BACKEND_SERVER_ADDRESS:-0.0.0.0}
+      JAVA_OPTS: ${JAVA_OPTS:-}
       SMTP_ENABLED: ${SMTP_ENABLED:-false}
       SMTP_HOST: ${SMTP_HOST:-localhost}
       SMTP_PORT: ${SMTP_PORT:-25}
@@ -42,8 +62,8 @@ services:
       SMTP_FROM: ${SMTP_FROM:-}
       SMTP_AUTH: ${SMTP_AUTH:-false}
       SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
-    ports:
-      - "${BACKEND_PORT:-8080}:8080"
+    expose:
+      - "8080"
     volumes:
       - pgh-pizza-backend-logs:/app/logs
 
@@ -54,9 +74,11 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    ports:
-      - "${FRONTEND_PORT:-4200}:80"
+    expose:
+      - "80"
 
 volumes:
+  pgh-pizza-caddy-data:
+  pgh-pizza-caddy-config:
   pgh-pizza-postgres-data:
   pgh-pizza-backend-logs:

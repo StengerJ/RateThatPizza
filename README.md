@@ -61,41 +61,60 @@ The backend uses PostgreSQL with database `pgh_pizza`, user `postgres`, and pass
 The default local admin is `admin@pgh-pizza.local` / `ChangeMe123!`. Override it with
 `PGH_ADMIN_EMAIL`, `PGH_ADMIN_PASSWORD`, and `PGH_ADMIN_DISPLAY_NAME`.
 
-## Linux Hybrid Server
+## Linux Docker Compose Server
 
 From the repo root on a Linux server, run:
 
 ```bash
-bash scripts/install-and-run-linux.sh
+cp .env.example .env
+nano .env
+docker compose up -d --build
 ```
 
-The script installs host dependencies, creates a local `.env` file with generated secrets,
-starts PostgreSQL as a Docker container, builds the backend JAR, installs the backend as a
-systemd service, builds the Angular frontend, and serves it with the host Nginx systemd
-service.
+The compose stack runs Caddy as the public web entrypoint, the Angular frontend as a
+private Nginx container, the Spring Boot backend as a private Java container, and
+PostgreSQL as a private database container with a persistent Docker volume.
 
-- `pgh-pizza-postgres`: Docker container exposed only on `127.0.0.1:${POSTGRES_PORT:-5432}`.
-- `pgh-pizza-backend`: systemd service exposed only on `127.0.0.1:${BACKEND_PORT:-8080}`.
-- `nginx`: systemd service exposed publicly on `${FRONTEND_PORT:-80}` and proxying `/api`
-  to the backend.
+- `pgh-pizza-caddy`: publicly exposed on `${FRONTEND_PORT:-80}` and `${HTTPS_PORT:-443}`.
+- `pgh-pizza-frontend`: private container serving Angular and proxying `/api`.
+- `pgh-pizza-backend`: private Spring Boot API container.
+- `pgh-pizza-postgres`: private PostgreSQL container using `pgh-pizza-postgres-data`.
 
-For a public server, point your domain's `A` record at the server, then set these values
-in `.env` and rerun the script:
+For a public domain, point your domain's `A` record at the Droplet, then set:
 
 ```bash
 PGH_SERVER_NAME=yourdomain.com
-PGH_FRONTEND_BASE_URL=http://yourdomain.com
+PGH_SITE_ADDRESS=yourdomain.com
+PGH_FRONTEND_BASE_URL=https://yourdomain.com
+PGH_CERTBOT_EMAIL=you@example.com
 FRONTEND_PORT=80
+HTTPS_PORT=443
 ```
 
-To have the script request a Let's Encrypt certificate through Certbot after DNS is
-pointing at the server, also set:
+With `PGH_SITE_ADDRESS=yourdomain.com`, Caddy automatically requests and renews HTTPS
+certificates. To test by public IP before DNS is ready, use HTTP-only values:
 
 ```bash
-PGH_ENABLE_HTTPS=true
-PGH_CERTBOT_EMAIL=you@example.com
-PGH_FRONTEND_BASE_URL=https://yourdomain.com
+PGH_SERVER_NAME=_
+PGH_SITE_ADDRESS=http://YOUR_DROPLET_PUBLIC_IP
+PGH_FRONTEND_BASE_URL=http://YOUR_DROPLET_PUBLIC_IP
 ```
 
 For DigitalOcean firewall rules, allow public inbound `80` and `443`, restrict `22` to
 your IP, and keep `8080` and `5432` closed to the public internet.
+
+Useful server checks:
+
+```bash
+docker compose ps
+docker compose logs -f caddy
+docker compose logs -f backend
+```
+
+## Linux Hybrid Server
+
+If you prefer PostgreSQL in Docker but backend/frontend on host systemd services, run:
+
+```bash
+bash scripts/install-and-run-linux.sh
+```
