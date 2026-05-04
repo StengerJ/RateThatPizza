@@ -41,9 +41,7 @@ app:
     from: ${SMTP_FROM:}
     smtp-enabled: ${SMTP_ENABLED:false}
   cors:
-    allowed-origins:
-      - http://localhost:4200
-      - http://127.0.0.1:4200
+    allowed-origins: ${PGH_CORS_ALLOWED_ORIGINS:https://pghpizza.org,https://www.pghpizza.org,http://localhost:4200,http://127.0.0.1:4200}
 
 logging:
   file:
