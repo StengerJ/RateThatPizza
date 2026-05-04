@@ -50,10 +50,37 @@
           </div>
 
           <div class="field">
-            <label for="profilePictureUrl">Profile picture URL</label>
-            <input id="profilePictureUrl" type="url" formControlName="profilePictureUrl">
+            <label for="profilePictureUpload">Profile picture</label>
+            <div class="picture-upload">
+              @if (picturePreview(); as previewUrl) {
+                <img
+                  class="picture-preview"
+                  [src]="previewUrl"
+                  alt="Selected profile picture preview"
+                >
+              } @else {
+                <div class="picture-preview fallback" aria-hidden="true">
+                  {{ profileInitials(currentProfile.displayName) }}
+                </div>
+              }
+
+              <div class="picture-controls">
+                <input
+                  id="profilePictureUpload"
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  (change)="selectProfilePicture($event)"
+                >
+                <p class="subtle">PNG or JPEG. Maximum 1 MB.</p>
+                @if (picturePreview()) {
+                  <button class="button secondary" type="button" (click)="clearProfilePicture()">
+                    Remove photo
+                  </button>
+                }
+              </div>
+            </div>
             @if (form.controls.profilePictureUrl.touched && form.controls.profilePictureUrl.invalid) {
-              <small>Use 500 characters or fewer.</small>
+              <small>Choose a smaller PNG or JPEG image.</small>
             }
           </div>
         </div>
@@ -135,24 +162,22 @@
               <th>Location</th>
               <th>Published</th>
               <th>Excerpt</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             @if (currentProfile.blogPosts.length === 0) {
               <tr>
-                <td colspan="5" class="empty">No blog posts published yet.</td>
+                <td colspan="4" class="empty">No blog posts published yet.</td>
               </tr>
             } @else {
               @for (post of currentProfile.blogPosts; track post.id ?? post.slug) {
                 <tr>
-                  <td data-label="Title">{{ post.title }}</td>
+                  <td data-label="Title">
+                    <a class="profile-link" [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+                  </td>
                   <td data-label="Location">{{ post.location }}</td>
                   <td data-label="Published">{{ post.createdAt | date: 'mediumDate' }}</td>
                   <td data-label="Excerpt">{{ excerpt(post) }}</td>
-                  <td data-label="Action">
-                    <a class="button secondary compact" [routerLink]="['/blog', post.slug]">Read</a>
-                  </td>
                 </tr>
               }
             }

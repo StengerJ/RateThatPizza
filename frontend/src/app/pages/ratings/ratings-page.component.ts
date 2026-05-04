@@ -41,6 +41,10 @@ export class RatingsPage implements OnInit {
     return Boolean(user && (user.role === 'ADMIN' || user.id === rating.creatorId));
   }
 
+  showActionsColumn(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
   isProcessing(id?: string): boolean {
     return id ? this.processingIds().has(id) : false;
   }

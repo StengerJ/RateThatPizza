@@ -135,6 +135,7 @@ textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
   overflow-x: auto;
 }
 
@@ -151,6 +152,7 @@ table {
 th,
 td {
   border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
   padding: 14px 16px;
   text-align: left;
   vertical-align: top;
@@ -334,6 +336,7 @@ tbody tr:last-child td {
   }
 
   td {
+    align-items: start;
     border-bottom: 1px solid var(--border);
     color: var(--ink);
     display: grid;

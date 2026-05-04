@@ -16,6 +16,8 @@ import { ProfileService } from '../../core/services/profile.service';
   styleUrls: ['./profile-page.component.css']
 })
 export class ProfilePage implements OnInit {
+  private static readonly maxProfilePictureBytes = 1024 * 1024;
+
   private readonly route = inject(ActivatedRoute);
   private readonly profileService = inject(ProfileService);
   private readonly auth = inject(AuthService);
@@ -27,6 +29,7 @@ export class ProfilePage implements OnInit {
   readonly saving = signal(false);
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+  readonly picturePreview = signal<string | null>(null);
 
   readonly isOwnProfile = computed(() => {
     const profile = this.profile();
@@ -37,7 +40,7 @@ export class ProfilePage implements OnInit {
   readonly form = this.fb.group({
     displayName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]],
     bio: ['', [Validators.maxLength(500)]],
-    profilePictureUrl: ['', [Validators.maxLength(500)]]
+    profilePictureUrl: ['', [Validators.maxLength(1400000)]]
   });
 
   ngOnInit(): void {
@@ -86,7 +89,7 @@ export class ProfilePage implements OnInit {
     this.profileService.updateMyProfile({
       displayName: value.displayName.trim(),
       bio: value.bio.trim(),
-      profilePictureUrl: value.profilePictureUrl.trim()
+      profilePictureUrl: value.profilePictureUrl
     }).subscribe({
       next: (profile) => {
         this.profile.set(profile);
@@ -116,6 +119,53 @@ export class ProfilePage implements OnInit {
     return post.body.length > 140 ? `${post.body.slice(0, 140)}...` : post.body;
   }
 
+  selectProfilePicture(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+      this.errorMessage.set('Use a PNG or JPEG image.');
+      input.value = '';
+      return;
+    }
+
+    if (file.size > ProfilePage.maxProfilePictureBytes) {
+      this.errorMessage.set('Profile pictures must be 1 MB or smaller.');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      this.form.controls.profilePictureUrl.setValue(result);
+      this.form.controls.profilePictureUrl.markAsDirty();
+      this.form.controls.profilePictureUrl.markAsTouched();
+      this.picturePreview.set(result || null);
+    };
+    reader.onerror = () => {
+      this.errorMessage.set('Profile picture could not be loaded.');
+      input.value = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearProfilePicture(): void {
+    this.form.controls.profilePictureUrl.setValue('');
+    this.form.controls.profilePictureUrl.markAsDirty();
+    this.form.controls.profilePictureUrl.markAsTouched();
+    this.picturePreview.set(null);
+    this.successMessage.set('');
+    this.errorMessage.set('');
+  }
+
   private loadProfile(profileId: string): void {
     this.loading.set(true);
     this.profile.set(null);
@@ -142,5 +192,6 @@ export class ProfilePage implements OnInit {
       bio: profile.bio ?? '',
       profilePictureUrl: profile.profilePictureUrl ?? ''
     });
+    this.picturePreview.set(profile.profilePictureUrl ?? null);
   }
 }

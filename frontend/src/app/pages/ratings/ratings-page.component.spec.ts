@@ -58,8 +58,7 @@ describe('RatingsPage', () => {
       'Overall Rating',
       'Affordability Rating',
       'Contributor',
-      'Comments',
-      'Actions'
+      'Comments'
     ]);
   });
 

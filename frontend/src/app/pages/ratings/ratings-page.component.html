@@ -31,13 +31,17 @@
           <th>Affordability Rating</th>
           <th>Contributor</th>
           <th>Comments</th>
-          <th>Actions</th>
+          @if (showActionsColumn()) {
+            <th>Actions</th>
+          }
         </tr>
       </thead>
       <tbody>
         @if (!loading() && ratings().length === 0) {
           <tr>
-            <td colspan="10" class="empty">No ratings are available yet.</td>
+            <td [attr.colspan]="showActionsColumn() ? 10 : 9" class="empty">
+              No ratings are available yet.
+            </td>
           </tr>
         } @else {
           @for (rating of ratings(); track rating.id ?? rating.restaurantName) {
@@ -57,22 +61,24 @@
                 }
               </td>
               <td data-label="Comments">{{ rating.comments }}</td>
-              @if (canManage(rating)) {
-                <td data-label="Actions">
-                  <div class="row-actions">
-                    <a class="button secondary" [routerLink]="['/ratings', rating.id, 'edit']">Edit</a>
-                    <button
-                      class="button danger"
-                      type="button"
-                      [disabled]="isProcessing(rating.id)"
-                      (click)="removeRating(rating)"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </td>
-              } @else {
-                <td class="desktop-only"></td>
+              @if (showActionsColumn()) {
+                @if (canManage(rating)) {
+                  <td data-label="Actions">
+                    <div class="row-actions">
+                      <a class="button secondary" [routerLink]="['/ratings', rating.id, 'edit']">Edit</a>
+                      <button
+                        class="button danger"
+                        type="button"
+                        [disabled]="isProcessing(rating.id)"
+                        (click)="removeRating(rating)"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </td>
+                } @else {
+                  <td class="desktop-only"></td>
+                }
               }
             </tr>
           }

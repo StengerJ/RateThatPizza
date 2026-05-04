@@ -30,7 +30,7 @@ public class UserEntity {
     @Column(name = "profile_bio", nullable = false, length = 500)
     private String profileBio = "";
 
-    @Column(name = "profile_picture_url", length = 500)
+    @Column(name = "profile_picture_url", columnDefinition = "TEXT")
     private String profilePictureUrl;
 
     @Column(name = "password_hash", nullable = false)

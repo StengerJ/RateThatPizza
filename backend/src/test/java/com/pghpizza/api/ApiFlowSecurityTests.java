@@ -235,6 +235,7 @@ class ApiFlowSecurityTests {
 
     @Test
     void publicProfilesShowReviewerRatingsAndBlogPostsAndUsersCanUpdateTheirProfile() throws Exception {
+        String profilePictureDataUrl = "data:image/png;base64,iVBORw0KGgo=";
         submitApplication("profile@example.com", "Profile Contributor", "ProfilePassword123!");
 
         String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
@@ -288,18 +289,18 @@ class ApiFlowSecurityTests {
                 .content(json(Map.of(
                         "displayName", "Profile Pizza Pro",
                         "bio", "Trying every slice in Pittsburgh.",
-                        "profilePictureUrl", "https://pghpizza.org/profile.jpg"))))
+                        "profilePictureUrl", profilePictureDataUrl))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.displayName").value("Profile Pizza Pro"))
                 .andExpect(jsonPath("$.bio").value("Trying every slice in Pittsburgh."))
-                .andExpect(jsonPath("$.profilePictureUrl").value("https://pghpizza.org/profile.jpg"));
+                .andExpect(jsonPath("$.profilePictureUrl").value(profilePictureDataUrl));
 
         mockMvc.perform(get("/api/auth/me")
                 .header("Authorization", "Bearer " + contributorToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.displayName").value("Profile Pizza Pro"))
                 .andExpect(jsonPath("$.profileBio").value("Trying every slice in Pittsburgh."))
-                .andExpect(jsonPath("$.profilePictureUrl").value("https://pghpizza.org/profile.jpg"));
+                .andExpect(jsonPath("$.profilePictureUrl").value(profilePictureDataUrl));
     }
 
     @Test
