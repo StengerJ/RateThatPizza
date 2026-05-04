@@ -92,7 +92,18 @@ HTTPS_PORT=443
 ```
 
 With `PGH_SITE_ADDRESS=yourdomain.com`, Caddy automatically requests and renews HTTPS
-certificates. To test by public IP before DNS is ready, use HTTP-only values:
+certificates. To use HTTPS directly on the Droplet's public IPv4 address, use the bare
+IPv4 address as the Caddy site address:
+
+```bash
+PGH_SERVER_NAME=_
+PGH_SITE_ADDRESS=YOUR_DROPLET_PUBLIC_IP
+PGH_FRONTEND_BASE_URL=https://YOUR_DROPLET_PUBLIC_IP
+FRONTEND_PORT=80
+HTTPS_PORT=443
+```
+
+To test by public IP over plain HTTP instead, prefix the site address with `http://`:
 
 ```bash
 PGH_SERVER_NAME=_
