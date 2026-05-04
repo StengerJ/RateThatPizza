@@ -83,14 +83,14 @@ PostgreSQL as a private database container with a persistent Docker volume.
 For a public domain, point your domain's `A` record at the Droplet, then set:
 
 ```bash
-PGH_SITE_ADDRESS=pghpizza.org,www.pghpizza.org
+PGH_SITE_ADDRESS="pghpizza.org, www.pghpizza.org"
 PGH_TLS_SERVER_NAME=pghpizza.org
 PGH_FRONTEND_BASE_URL=https://pghpizza.org
 FRONTEND_PORT=80
 HTTPS_PORT=443
 ```
 
-With `PGH_SITE_ADDRESS=pghpizza.org,www.pghpizza.org`, Caddy automatically requests and renews HTTPS
+With `PGH_SITE_ADDRESS="pghpizza.org, www.pghpizza.org"`, Caddy automatically requests and renews HTTPS
 certificates. To use HTTPS directly on the Droplet's public IPv4 address, use the bare
 IPv4 address as the Caddy site address:
 

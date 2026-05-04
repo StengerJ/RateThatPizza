@@ -30,6 +30,11 @@
   line-height: 1.7;
 }
 
+.signature {
+  color: var(--ink);
+  font-weight: 800;
+}
+
 .highlight {
   border-top: 4px solid var(--palette-gold);
   grid-column: 1 / -1;
