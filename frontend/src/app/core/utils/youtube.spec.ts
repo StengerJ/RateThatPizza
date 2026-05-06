@@ -6,6 +6,21 @@ describe('youtube utilities', () => {
       'dQw4w9WgXcQ'
     );
     expect(extractYoutubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
+    expect(extractYoutubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ?si=abc')).toBe(
+      'dQw4w9WgXcQ'
+    );
+    expect(extractYoutubeVideoId('https://m.youtube.com/shorts/dQw4w9WgXcQ')).toBe(
+      'dQw4w9WgXcQ'
+    );
+    expect(extractYoutubeVideoId('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')).toBe(
+      'dQw4w9WgXcQ'
+    );
+    expect(extractYoutubeVideoId('https://www.youtube.com/live/dQw4w9WgXcQ')).toBe(
+      'dQw4w9WgXcQ'
+    );
+    expect(
+      extractYoutubeVideoId('https://www.youtube.com/attribution_link?u=/watch%3Fv%3DdQw4w9WgXcQ')
+    ).toBe('dQw4w9WgXcQ');
     expect(extractYoutubeVideoId('dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
   });
 

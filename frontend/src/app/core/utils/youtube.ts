@@ -1,4 +1,5 @@
 const YOUTUBE_ID_PATTERN = /^[a-zA-Z0-9_-]{11}$/;
+const YOUTUBE_PATH_ID_PATTERN = /^\/(?:embed|shorts|live|v)\/([a-zA-Z0-9_-]{11})(?:\/|$)/;
 
 export function extractYoutubeVideoId(value: string | null | undefined): string | null {
   const candidate = value?.trim();
@@ -20,15 +21,27 @@ export function extractYoutubeVideoId(value: string | null | undefined): string 
       return id && YOUTUBE_ID_PATTERN.test(id) ? id : null;
     }
 
-    if (host === 'youtube.com' || host === 'm.youtube.com') {
+    if (isYoutubeHost(host)) {
       const watchId = url.searchParams.get('v');
 
       if (watchId && YOUTUBE_ID_PATTERN.test(watchId)) {
         return watchId;
       }
 
-      const embedMatch = url.pathname.match(/^\/embed\/([a-zA-Z0-9_-]{11})$/);
-      return embedMatch ? embedMatch[1] : null;
+      const pathMatch = url.pathname.match(YOUTUBE_PATH_ID_PATTERN);
+      if (pathMatch) {
+        return pathMatch[1];
+      }
+
+      const nestedUrl = url.searchParams.get('u') ?? url.searchParams.get('url');
+      if (!nestedUrl) {
+        return null;
+      }
+
+      const nestedCandidate = nestedUrl.startsWith('/')
+        ? new URL(nestedUrl, 'https://www.youtube.com').toString()
+        : nestedUrl;
+      return extractYoutubeVideoId(nestedCandidate);
     }
   } catch {
     return null;
@@ -39,4 +52,13 @@ export function extractYoutubeVideoId(value: string | null | undefined): string 
 
 export function buildYoutubeEmbedUrl(videoId: string): string {
   return `https://www.youtube.com/embed/${videoId}`;
+}
+
+function isYoutubeHost(host: string): boolean {
+  return [
+    'youtube.com',
+    'm.youtube.com',
+    'music.youtube.com',
+    'youtube-nocookie.com'
+  ].includes(host);
 }
