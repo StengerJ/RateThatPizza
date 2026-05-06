@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pghpizza.org/sitemap.xml
