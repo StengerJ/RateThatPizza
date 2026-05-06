@@ -40,4 +40,56 @@ public class EmailService {
             log.info("Development password reset link for {}: {}", recipient, resetLink);
         }
     }
+
+    public void sendContributorApprovalEmail(String recipient, String displayName) {
+        String messageText = "Hello " + displayName + ",\n\n"
+                + "Thank you for taking the time to apply to be a contributor to pghpizza.org!\n"
+                + "We appreciate your dedication to pizza very much!\n\n"
+                + "Your contributor application has been approved. You can now log in and start sharing your pizza "
+                + "ratings and blog posts with the Pittsburgh pizza community.";
+
+        sendContributorApplicationEmail(
+                recipient,
+                "Your pghpizza.org contributor application was approved",
+                messageText,
+                "approval");
+    }
+
+    public void sendContributorRejectionEmail(String recipient, String displayName) {
+        String messageText = "Hello " + displayName + ",\n\n"
+                + "Thank you for taking the time to apply to be a contributor to pghpizza.org!\n"
+                + "We appreciate your dedication to pizza very much!\n\n"
+                + "We are not able to approve your contributor application at this time, but we still appreciate your "
+                + "interest in being part of the Pittsburgh pizza community.";
+
+        sendContributorApplicationEmail(
+                recipient,
+                "Your pghpizza.org contributor application update",
+                messageText,
+                "rejection");
+    }
+
+    private void sendContributorApplicationEmail(
+            String recipient,
+            String subject,
+            String messageText,
+            String outcome) {
+        if (!properties.mail().smtpEnabled() || !StringUtils.hasText(properties.mail().from())) {
+            log.info("Development contributor {} email for {}:\n{}", outcome, recipient, messageText);
+            return;
+        }
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(properties.mail().from());
+            message.setTo(recipient);
+            message.setSubject(subject);
+            message.setText(messageText);
+            mailSender.send(message);
+        } catch (RuntimeException exception) {
+            log.error("SMTP contributor {} email failed for {}; using development log fallback",
+                    outcome, recipient, exception);
+            log.info("Development contributor {} email for {}:\n{}", outcome, recipient, messageText);
+        }
+    }
 }

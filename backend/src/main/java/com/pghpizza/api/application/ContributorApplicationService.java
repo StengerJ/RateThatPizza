@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pghpizza.api.common.ConflictException;
 import com.pghpizza.api.common.NotFoundException;
 import com.pghpizza.api.common.TextSanitizer;
+import com.pghpizza.api.email.EmailService;
 import com.pghpizza.api.user.UserEntity;
 import com.pghpizza.api.user.UserRepository;
 import com.pghpizza.api.user.UserRole;
@@ -21,14 +22,17 @@ public class ContributorApplicationService {
     private final ContributorApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public ContributorApplicationService(
             ContributorApplicationRepository applicationRepository,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EmailService emailService) {
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -72,7 +76,9 @@ public class ContributorApplicationService {
         application.setReviewedAt(Instant.now());
 
         userRepository.save(applicant);
-        return ContributorApplicationResponse.from(applicationRepository.save(application));
+        ContributorApplicationEntity savedApplication = applicationRepository.save(application);
+        emailService.sendContributorApprovalEmail(applicant.getEmail(), applicant.getDisplayName());
+        return ContributorApplicationResponse.from(savedApplication);
     }
 
     @Transactional
@@ -86,7 +92,9 @@ public class ContributorApplicationService {
         application.setReviewedAt(Instant.now());
 
         userRepository.save(applicant);
-        return ContributorApplicationResponse.from(applicationRepository.save(application));
+        ContributorApplicationEntity savedApplication = applicationRepository.save(application);
+        emailService.sendContributorRejectionEmail(applicant.getEmail(), applicant.getDisplayName());
+        return ContributorApplicationResponse.from(savedApplication);
     }
 
     private ContributorApplicationEntity requirePendingApplication(UUID id) {

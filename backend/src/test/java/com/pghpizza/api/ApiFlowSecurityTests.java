@@ -1,6 +1,7 @@
 package com.pghpizza.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -19,11 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pghpizza.api.auth.PasswordResetTokenRepository;
+import com.pghpizza.api.email.EmailService;
 import com.pghpizza.api.user.UserRepository;
 
 @SpringBootTest
@@ -42,6 +45,9 @@ class ApiFlowSecurityTests {
 
     @Autowired
     PasswordResetTokenRepository tokenRepository;
+
+    @MockitoBean
+    EmailService emailService;
 
     @Test
     void publicRatingsEndpointAllowsAnonymousUsers() throws Exception {
@@ -78,6 +84,27 @@ class ApiFlowSecurityTests {
                         "affordabilityRating", 7,
                         "comments", "Pending users should not be able to publish"))))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void adminsSendContributorDecisionEmailsWhenApplicationsAreReviewed() throws Exception {
+        submitApplication("approved@example.com", "Approved Person", "ApprovedPassword123!");
+        submitApplication("denied@example.com", "Denied Person", "DeniedPassword123!");
+
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+        String approvedId = findApplicationId(adminToken, "approved@example.com", "PENDING");
+        String deniedId = findApplicationId(adminToken, "denied@example.com", "PENDING");
+
+        mockMvc.perform(post("/api/admin/applications/{id}/approve", approvedId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/admin/applications/{id}/reject", deniedId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
+
+        verify(emailService).sendContributorApprovalEmail("approved@example.com", "Approved Person");
+        verify(emailService).sendContributorRejectionEmail("denied@example.com", "Denied Person");
     }
 
     @Test
@@ -470,6 +497,25 @@ class ApiFlowSecurityTests {
         mockMvc.perform(post("/api/admin/applications/{id}/approve", pendingId)
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
+    }
+
+    private String findApplicationId(String adminToken, String email, String expectedStatus) throws Exception {
+        String response = mockMvc.perform(get("/api/admin/applications")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode applications = objectMapper.readTree(response);
+        for (JsonNode application : applications) {
+            if (email.equals(application.get("email").asText())
+                    && expectedStatus.equals(application.get("status").asText())) {
+                return application.get("id").asText();
+            }
+        }
+
+        throw new AssertionError("Application not found: " + email);
     }
 
     private JsonNode findUserByEmail(JsonNode users, String email) {
