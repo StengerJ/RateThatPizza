@@ -9,4 +9,6 @@ public interface RatingRepository extends JpaRepository<RatingEntity, UUID> {
     List<RatingEntity> findAllByOrderByCreatedAtDesc();
 
     List<RatingEntity> findAllByCreator_IdOrderByCreatedAtDesc(UUID creatorId);
+
+    long countByCreator_Id(UUID creatorId);
 }

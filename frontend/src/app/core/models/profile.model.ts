@@ -10,6 +10,14 @@ export interface UserProfile {
   blogPosts: BlogPost[];
 }
 
+export interface ContributorProfileSummary {
+  id: string;
+  displayName: string;
+  profilePictureUrl?: string | null;
+  ratingCount: number;
+  blogPostCount: number;
+}
+
 export interface UserProfileUpdateRequest {
   displayName: string;
   bio: string;

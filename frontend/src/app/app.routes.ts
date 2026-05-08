@@ -7,6 +7,7 @@ import { ApplyPage } from './pages/apply/apply-page.component';
 import { BlogDetailPage } from './pages/blog-detail/blog-detail-page.component';
 import { BlogFormPage } from './pages/blog-form/blog-form-page.component';
 import { BlogListPage } from './pages/blog-list/blog-list-page.component';
+import { ContributorsPage } from './pages/contributors/contributors-page.component';
 import { LoginPage } from './pages/login/login-page.component';
 import { PasswordResetConfirmPage } from './pages/password-reset-confirm/password-reset-confirm-page.component';
 import { PasswordResetRequestPage } from './pages/password-reset-request/password-reset-request-page.component';
@@ -68,6 +69,11 @@ export const routes: Routes = [
     path: 'blog',
     component: BlogListPage,
     title: 'Blog | PGH-Pizza'
+  },
+  {
+    path: 'contributors',
+    component: ContributorsPage,
+    title: 'Contributors | PGH-Pizza'
   },
   {
     path: 'login',

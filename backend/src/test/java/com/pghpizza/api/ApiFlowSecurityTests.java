@@ -108,6 +108,76 @@ class ApiFlowSecurityTests {
     }
 
     @Test
+    void publicContributorDirectoryShowsProfileCountsWithoutPrivateEmail() throws Exception {
+        submitApplication("directory@example.com", "Directory Contributor", "DirectoryPassword123!");
+
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+        approveFirstPendingApplication(adminToken);
+
+        String contributorToken = login("directory@example.com", "DirectoryPassword123!");
+
+        mockMvc.perform(post("/api/ratings")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "restaurantName", "Directory Slice",
+                        "location", "Strip District",
+                        "sauce", "Bright",
+                        "toppings", "Cheese",
+                        "crust", "Thin",
+                        "overallRating", 8.5,
+                        "affordabilityRating", 8,
+                        "comments", "Counts toward the public directory"))))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/blog-posts")
+                .header("Authorization", "Bearer " + contributorToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "title", "Directory blog post",
+                        "slug", "directory-blog-post",
+                        "location", "Strip District",
+                        "body", "A public contributor directory count should include this blog post.",
+                        "youtubeUrl", "",
+                        "youtubeVideoId", ""))))
+                .andExpect(status().isOk());
+
+        String response = mockMvc.perform(get("/api/profiles/contributors"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode contributor = findContributorProfile(objectMapper.readTree(response), "Directory Contributor");
+        assertThat(contributor.has("email")).isFalse();
+        assertThat(contributor.get("ratingCount").asLong()).isEqualTo(1);
+        assertThat(contributor.get("blogPostCount").asLong()).isEqualTo(1);
+    }
+
+    @Test
+    void blogPostsAcceptFullYoutubeWatchUrlsAndNormalizeVideoId() throws Exception {
+        String adminToken = login("admin@pgh-pizza.local", "ChangeMe123!");
+
+        mockMvc.perform(post("/api/blog-posts")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json(Map.of(
+                        "title", "Full YouTube URL",
+                        "slug", "full-youtube-url",
+                        "location", "Pittsburgh",
+                        "body", "A full YouTube watch URL should save with an embeddable video ID.",
+                        "youtubeUrl", "https://www.youtube.com/watch?v=Cstdq9o8TO8",
+                        "youtubeVideoId", ""))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.youtubeUrl").value("https://www.youtube.com/watch?v=Cstdq9o8TO8"))
+                .andExpect(jsonPath("$.youtubeVideoId").value("Cstdq9o8TO8"));
+
+        mockMvc.perform(get("/api/blog-posts/full-youtube-url"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.youtubeVideoId").value("Cstdq9o8TO8"));
+    }
+
+    @Test
     void adminsApproveContributorsAndContributorsCanOnlyDeleteTheirOwnRatings() throws Exception {
         submitApplication("first@example.com", "First Contributor", "FirstPassword123!");
         submitApplication("second@example.com", "Second Contributor", "SecondPassword123!");
@@ -526,6 +596,16 @@ class ApiFlowSecurityTests {
         }
 
         throw new AssertionError("User not found: " + email);
+    }
+
+    private JsonNode findContributorProfile(JsonNode contributors, String displayName) {
+        for (JsonNode contributor : contributors) {
+            if (displayName.equals(contributor.get("displayName").asText())) {
+                return contributor;
+            }
+        }
+
+        throw new AssertionError("Contributor profile not found: " + displayName);
     }
 
     private String json(Object value) throws Exception {

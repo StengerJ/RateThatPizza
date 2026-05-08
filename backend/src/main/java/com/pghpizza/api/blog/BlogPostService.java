@@ -81,8 +81,12 @@ public class BlogPostService {
         post.setSlug(TextSanitizer.trim(request.slug()));
         post.setLocation(TextSanitizer.trim(request.location()));
         post.setBody(TextSanitizer.trim(request.body()));
-        post.setYoutubeUrl(TextSanitizer.emptyToNull(request.youtubeUrl()));
-        post.setYoutubeVideoId(TextSanitizer.emptyToNull(request.youtubeVideoId()));
+        String youtubeUrl = TextSanitizer.emptyToNull(request.youtubeUrl());
+        String youtubeVideoId = TextSanitizer.emptyToNull(request.youtubeVideoId());
+        post.setYoutubeUrl(youtubeUrl);
+        post.setYoutubeVideoId(youtubeVideoId == null
+                ? YoutubeVideoIdExtractor.extract(youtubeUrl)
+                : youtubeVideoId);
     }
 
     private void requirePublisher(UserEntity user) {

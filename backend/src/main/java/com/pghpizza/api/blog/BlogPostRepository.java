@@ -11,6 +11,8 @@ public interface BlogPostRepository extends JpaRepository<BlogPostEntity, UUID> 
 
     List<BlogPostEntity> findAllByAuthor_IdOrderByCreatedAtDesc(UUID authorId);
 
+    long countByAuthor_Id(UUID authorId);
+
     Optional<BlogPostEntity> findBySlug(String slug);
 
     boolean existsBySlug(String slug);

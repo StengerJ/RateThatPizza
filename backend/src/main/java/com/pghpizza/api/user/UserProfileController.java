@@ -1,5 +1,6 @@
 package com.pghpizza.api.user;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,11 @@ public class UserProfileController {
     public UserProfileController(UserProfileService userProfileService, CurrentUserService currentUserService) {
         this.userProfileService = userProfileService;
         this.currentUserService = currentUserService;
+    }
+
+    @GetMapping("/contributors")
+    public List<ContributorProfileSummaryResponse> listContributors() {
+        return userProfileService.listContributors();
     }
 
     @GetMapping("/{id}")

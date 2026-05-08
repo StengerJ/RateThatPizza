@@ -1,5 +1,6 @@
 package com.pghpizza.api.user;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import com.pghpizza.api.rating.RatingRepository;
 
 @Service
 public class UserProfileService {
+    private static final List<UserRole> PUBLIC_CONTRIBUTOR_ROLES = List.of(UserRole.CONTRIBUTOR, UserRole.ADMIN);
+
     private final UserRepository userRepository;
     private final RatingRepository ratingRepository;
     private final BlogPostRepository blogPostRepository;
@@ -23,6 +26,19 @@ public class UserProfileService {
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
         this.blogPostRepository = blogPostRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ContributorProfileSummaryResponse> listContributors() {
+        return userRepository.findAllByStatusAndRoleInOrderByDisplayNameAsc(
+                        UserStatus.ACTIVE,
+                        PUBLIC_CONTRIBUTOR_ROLES)
+                .stream()
+                .map(contributor -> ContributorProfileSummaryResponse.from(
+                        contributor,
+                        ratingRepository.countByCreator_Id(contributor.getId()),
+                        blogPostRepository.countByAuthor_Id(contributor.getId())))
+                .toList();
     }
 
     @Transactional(readOnly = true)

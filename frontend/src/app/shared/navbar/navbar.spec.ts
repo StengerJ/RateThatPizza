@@ -37,6 +37,7 @@ describe('Navbar', () => {
     expect(linkText).toContain('PGH-Pizza');
     expect(linkText).toContain('Ratings');
     expect(linkText).toContain('Blog');
+    expect(linkText).toContain('Contributors');
     expect(linkText).toContain('Apply');
     expect(linkText).toContain('About');
     expect(linkText).toContain('Login');
@@ -48,7 +49,7 @@ describe('Navbar', () => {
       link.textContent?.trim()
     );
 
-    expect(primaryLinks.slice(0, 4)).toEqual(['Home', 'About', 'Blog', 'Ratings']);
+    expect(primaryLinks.slice(0, 5)).toEqual(['Home', 'About', 'Blog', 'Contributors', 'Ratings']);
   });
 
   it('should only show apply to logged out visitors', () => {

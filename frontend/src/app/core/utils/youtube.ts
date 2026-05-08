@@ -12,6 +12,11 @@ export function extractYoutubeVideoId(value: string | null | undefined): string 
     return candidate;
   }
 
+  const queryOnlyId = extractYoutubeVideoIdFromQuery(candidate);
+  if (queryOnlyId) {
+    return queryOnlyId;
+  }
+
   try {
     const url = new URL(candidate);
     const host = url.hostname.replace(/^www\./, '');
@@ -61,4 +66,23 @@ function isYoutubeHost(host: string): boolean {
     'music.youtube.com',
     'youtube-nocookie.com'
   ].includes(host);
+}
+
+function extractYoutubeVideoIdFromQuery(candidate: string): string | null {
+  const query = candidate.startsWith('?')
+    ? candidate.slice(1)
+    : candidate.startsWith('watch?')
+      ? candidate.slice('watch?'.length)
+      : candidate.startsWith('/watch?')
+        ? candidate.slice('/watch?'.length)
+        : candidate.startsWith('v=')
+          ? candidate
+          : '';
+
+  if (!query) {
+    return null;
+  }
+
+  const id = new URLSearchParams(query).get('v');
+  return id && YOUTUBE_ID_PATTERN.test(id) ? id : null;
 }

@@ -1,0 +1,58 @@
+<section class="page contributors-page">
+  <header class="page-header">
+    <div>
+      <h1>Contributors</h1>
+      <p>Browse the PGH Pizza contributors sharing ratings, blog posts, and Pittsburgh pizza notes.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="status">Loading contributors...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="status error">{{ errorMessage() }}</p>
+  }
+
+  <div class="table-wrap contributors-table">
+    <table aria-label="Contributors table">
+      <thead>
+        <tr>
+          <th>Contributor</th>
+          <th>Ratings</th>
+          <th>Blog posts</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!loading() && contributors().length === 0) {
+          <tr>
+            <td colspan="3" class="empty">No contributors are available yet.</td>
+          </tr>
+        } @else {
+          @for (contributor of contributors(); track contributor.id) {
+            <tr>
+              <td data-label="Contributor">
+                <a class="contributor-link" [routerLink]="['/profiles', contributor.id]">
+                  @if (contributor.profilePictureUrl) {
+                    <img
+                      class="profile-thumb"
+                      [src]="contributor.profilePictureUrl"
+                      [alt]="contributor.displayName + ' profile picture'"
+                    >
+                  } @else {
+                    <span class="profile-thumb fallback" aria-hidden="true">
+                      {{ profileInitials(contributor.displayName) }}
+                    </span>
+                  }
+                  <span>{{ contributor.displayName }}</span>
+                </a>
+              </td>
+              <td data-label="Ratings">{{ contributor.ratingCount }}</td>
+              <td data-label="Blog posts">{{ contributor.blogPostCount }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

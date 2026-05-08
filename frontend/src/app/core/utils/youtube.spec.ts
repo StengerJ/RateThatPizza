@@ -5,6 +5,9 @@ describe('youtube utilities', () => {
     expect(extractYoutubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
       'dQw4w9WgXcQ'
     );
+    expect(extractYoutubeVideoId('https://www.youtube.com/watch?v=Cstdq9o8TO8')).toBe(
+      'Cstdq9o8TO8'
+    );
     expect(extractYoutubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     expect(extractYoutubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ?si=abc')).toBe(
       'dQw4w9WgXcQ'
@@ -21,6 +24,9 @@ describe('youtube utilities', () => {
     expect(
       extractYoutubeVideoId('https://www.youtube.com/attribution_link?u=/watch%3Fv%3DdQw4w9WgXcQ')
     ).toBe('dQw4w9WgXcQ');
+    expect(extractYoutubeVideoId('v=Cstdq9o8TO8')).toBe('Cstdq9o8TO8');
+    expect(extractYoutubeVideoId('?v=Cstdq9o8TO8')).toBe('Cstdq9o8TO8');
+    expect(extractYoutubeVideoId('watch?v=Cstdq9o8TO8')).toBe('Cstdq9o8TO8');
     expect(extractYoutubeVideoId('dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
   });
 
