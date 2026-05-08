@@ -3,7 +3,7 @@
 }
 
 .profile-page {
-  width: min(1040px, 100%);
+  --page-max-width: 1040px;
 }
 
 .profile-hero {
@@ -183,5 +183,11 @@
   .picture-preview {
     height: 96px;
     width: 96px;
+  }
+}
+
+@media (min-width: 900px) {
+  .profile-page {
+    --page-max-width: 1360px;
   }
 }

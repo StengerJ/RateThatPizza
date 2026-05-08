@@ -1,14 +1,10 @@
-<section class="page contributors-page">
+<section class="page table-page contributors-page">
   <header class="page-header">
     <div>
       <h1>Contributors</h1>
       <p>Browse the PGH Pizza contributors sharing ratings, blog posts, and Pittsburgh pizza notes.</p>
     </div>
   </header>
-
-  @if (loading()) {
-    <p class="status">Loading contributors...</p>
-  }
 
   @if (errorMessage()) {
     <p class="status error">{{ errorMessage() }}</p>

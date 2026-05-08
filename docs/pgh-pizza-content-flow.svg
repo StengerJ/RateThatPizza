@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">PGH-Pizza Contributor And Content Data Flow</title>
+  <desc id="desc">Diagram showing visitors applying to contribute, admins approving applications, contributors publishing ratings and blog posts, and public pages reading approved content from PostgreSQL through the Spring Boot API.</desc>
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D93240"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F29F05"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#400F0F"/>
+    </marker>
+    <style>
+      .bg { fill: #fff8f2; }
+      .title { fill: #400F0F; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #8C2029; font-family: Arial, sans-serif; font-size: 16px; }
+      .box { fill: #ffffff; stroke: #8C2029; stroke-width: 3; rx: 12; }
+      .box-alt { fill: #fff1df; stroke: #F29F05; stroke-width: 3; rx: 12; }
+      .box-dark { fill: #400F0F; stroke: #400F0F; stroke-width: 3; rx: 12; }
+      .label { fill: #400F0F; font-family: Arial, sans-serif; font-size: 21px; font-weight: 700; }
+      .small { fill: #400F0F; font-family: Arial, sans-serif; font-size: 15px; }
+      .small-light { fill: #ffffff; font-family: Arial, sans-serif; font-size: 15px; }
+      .label-light { fill: #ffffff; font-family: Arial, sans-serif; font-size: 21px; font-weight: 700; }
+      .arrow-red { fill: none; stroke: #D93240; stroke-width: 4; marker-end: url(#arrow-red); }
+      .arrow-gold { fill: none; stroke: #F29F05; stroke-width: 4; marker-end: url(#arrow-gold); }
+      .arrow-dark { fill: none; stroke: #400F0F; stroke-width: 4; marker-end: url(#arrow-dark); }
+      .note { fill: #8C2029; font-family: Arial, sans-serif; font-size: 14px; font-weight: 700; }
+      .lane { fill: none; stroke: rgba(64, 15, 15, 0.16); stroke-width: 2; stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="820"/>
+  <text class="title" x="70" y="62">PGH-Pizza Contributor And Content Flow</text>
+  <text class="subtitle" x="70" y="92">Applications, approvals, ratings, blog posts, profiles, and public reads all pass through the Spring Boot API.</text>
+
+  <rect class="lane" x="45" y="126" width="1110" height="285" rx="18"/>
+  <text class="note" x="70" y="156">Contributor approval flow</text>
+
+  <rect class="lane" x="45" y="455" width="1110" height="300" rx="18"/>
+  <text class="note" x="70" y="485">Publishing and public browsing flow</text>
+
+  <rect class="box" x="70" y="190" width="220" height="140"/>
+  <text class="label" x="108" y="230">Visitor</text>
+  <text class="small" x="108" y="262">Browses public pages</text>
+  <text class="small" x="108" y="287">Submits application</text>
+  <text class="small" x="108" y="312">Can request reset link</text>
+
+  <rect class="box-alt" x="405" y="175" width="300" height="170"/>
+  <text class="label" x="447" y="216">Spring Boot API</text>
+  <text class="small" x="447" y="248">Validates request bodies</text>
+  <text class="small" x="447" y="273">Hashes passwords and tokens</text>
+  <text class="small" x="447" y="298">Checks JWT role claims</text>
+  <text class="small" x="447" y="323">Sends approval emails</text>
+
+  <rect class="box" x="850" y="175" width="275" height="170"/>
+  <text class="label" x="891" y="216">Admin</text>
+  <text class="small" x="891" y="248">Reviews applications</text>
+  <text class="small" x="891" y="273">Approves or rejects users</text>
+  <text class="small" x="891" y="298">Can update permissions</text>
+  <text class="small" x="891" y="323">Can remove content</text>
+
+  <rect class="box-dark" x="455" y="540" width="255" height="145"/>
+  <text class="label-light" x="504" y="582">PostgreSQL</text>
+  <text class="small-light" x="504" y="613">Applications and users</text>
+  <text class="small-light" x="504" y="638">Ratings and blog posts</text>
+  <text class="small-light" x="504" y="663">Profiles and reset tokens</text>
+
+  <rect class="box" x="70" y="535" width="245" height="170"/>
+  <text class="label" x="108" y="576">Contributor</text>
+  <text class="small" x="108" y="608">Logs in for JWT</text>
+  <text class="small" x="108" y="633">Creates ratings</text>
+  <text class="small" x="108" y="658">Publishes blog posts</text>
+  <text class="small" x="108" y="683">Updates profile photo</text>
+
+  <rect class="box-alt" x="850" y="535" width="275" height="170"/>
+  <text class="label" x="887" y="576">Public Pages</text>
+  <text class="small" x="887" y="608">Ratings table</text>
+  <text class="small" x="887" y="633">Blog list and posts</text>
+  <text class="small" x="887" y="658">Contributor directory</text>
+  <text class="small" x="887" y="683">Reviewer profiles</text>
+
+  <path class="arrow-red" d="M 290 260 C 340 260, 355 260, 405 260"/>
+  <text class="note" x="306" y="245">POST /api/applications</text>
+
+  <path class="arrow-dark" d="M 705 240 C 765 205, 790 205, 850 230"/>
+  <text class="note" x="725" y="205">Admin reads pending users</text>
+
+  <path class="arrow-red" d="M 850 294 C 790 333, 765 333, 705 300"/>
+  <text class="note" x="728" y="352">Approve or reject</text>
+
+  <path class="arrow-dark" d="M 555 345 L 555 540"/>
+  <text class="note" x="573" y="443">Persist application status</text>
+
+  <path class="arrow-gold" d="M 405 318 C 350 370, 315 372, 290 315"/>
+  <text class="note" x="306" y="383">Email decision or reset link</text>
+
+  <path class="arrow-red" d="M 315 610 C 365 610, 390 610, 455 610"/>
+  <text class="note" x="330" y="594">Create or edit content</text>
+
+  <path class="arrow-dark" d="M 710 610 C 760 610, 790 610, 850 610"/>
+  <text class="note" x="735" y="594">Read approved public data</text>
+
+  <path class="arrow-gold" d="M 850 668 C 765 740, 630 746, 315 675"/>
+  <text class="note" x="430" y="746">Public users discover contributor work</text>
+
+  <path class="arrow-dark" d="M 988 535 C 1015 455, 1018 384, 990 345"/>
+  <text class="note" x="1010" y="450">Admin moderation writes</text>
+</svg>

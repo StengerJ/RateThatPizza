@@ -15,11 +15,14 @@ import { ProfilePage } from './pages/profile/profile-page.component';
 import { RatingFormPage } from './pages/rating-form/rating-form-page.component';
 import { RatingsPage } from './pages/ratings/ratings-page.component';
 
+export const PAGE_CACHE_TTL_MS = 15 * 60 * 1000;
+
 export const routes: Routes = [
   {
     path: '',
     component: Home,
-    title: 'PGH-Pizza'
+    title: 'PGH-Pizza',
+    data: { cacheTtlMs: PAGE_CACHE_TTL_MS }
   },
   {
     path: 'ratings/new',
@@ -46,7 +49,8 @@ export const routes: Routes = [
   {
     path: 'about-me',
     component: AboutMe,
-    title: 'About Me | PGH-Pizza'
+    title: 'About Me | PGH-Pizza',
+    data: { cacheTtlMs: PAGE_CACHE_TTL_MS }
   },
   {
     path: 'blog/new',
@@ -73,7 +77,8 @@ export const routes: Routes = [
   {
     path: 'contributors',
     component: ContributorsPage,
-    title: 'Contributors | PGH-Pizza'
+    title: 'Contributors | PGH-Pizza',
+    data: { cacheTtlMs: PAGE_CACHE_TTL_MS }
   },
   {
     path: 'login',

@@ -31,6 +31,10 @@ backend log file at `backend/logs/pgh-pizza-api.log` or the container log volume
 
 ![PGH-Pizza frontend/backend information flow](docs/pgh-pizza-flow.svg)
 
+## Contributor And Content Flow
+
+![PGH-Pizza contributor and content data flow](docs/pgh-pizza-content-flow.svg)
+
 ## Local Development
 
 Start PostgreSQL:

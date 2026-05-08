@@ -49,7 +49,7 @@ describe('Navbar', () => {
       link.textContent?.trim()
     );
 
-    expect(primaryLinks.slice(0, 5)).toEqual(['Home', 'About', 'Blog', 'Contributors', 'Ratings']);
+    expect(primaryLinks.slice(0, 5)).toEqual(['Home', 'About', 'Contributors', 'Ratings', 'Blog']);
   });
 
   it('should only show apply to logged out visitors', () => {

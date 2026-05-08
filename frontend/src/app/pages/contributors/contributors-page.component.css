@@ -3,7 +3,7 @@
 }
 
 .contributors-page {
-  width: min(960px, 100%);
+  --page-max-width: 960px;
 }
 
 .contributors-table {
@@ -58,5 +58,11 @@
 
   .contributor-link {
     width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .contributors-page {
+    --page-max-width: 1280px;
   }
 }

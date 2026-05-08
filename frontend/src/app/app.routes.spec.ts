@@ -1,4 +1,4 @@
-import { routes } from './app.routes';
+import { PAGE_CACHE_TTL_MS, routes } from './app.routes';
 import { adminGuard, contributorGuard } from './core/guards/role.guard';
 
 describe('app routes', () => {
@@ -30,5 +30,15 @@ describe('app routes', () => {
     expect(newBlogPostRoute?.canActivate).toContain(contributorGuard);
     expect(editBlogPostRoute?.canActivate).toContain(contributorGuard);
     expect(adminRoute?.canActivate).toContain(adminGuard);
+  });
+
+  it('should cache stable public pages for 15 minutes', () => {
+    const cachedRoutes = ['', 'about-me', 'contributors'];
+
+    for (const path of cachedRoutes) {
+      const route = routes.find((currentRoute) => currentRoute.path === path);
+
+      expect(route?.data?.['cacheTtlMs']).toBe(PAGE_CACHE_TTL_MS);
+    }
   });
 });

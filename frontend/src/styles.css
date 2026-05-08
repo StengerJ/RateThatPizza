@@ -62,7 +62,7 @@ textarea {
   gap: 24px;
   margin: 0 auto;
   padding: 40px 16px 64px;
-  width: min(1120px, 100%);
+  width: min(var(--page-max-width, 1120px), 100%);
 }
 
 .narrow-page {
@@ -263,6 +263,13 @@ tbody tr:last-child td {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
+}
+
+@media (min-width: 900px) {
+  .page.table-page {
+    --page-max-width: 1480px;
+    padding-inline: 24px;
+  }
 }
 
 @media (max-width: 720px) {

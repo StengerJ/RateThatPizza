@@ -1,4 +1,4 @@
-<section class="page">
+<section class="page table-page">
   <header class="page-header">
     <div>
       <h1>Pizza ratings</h1>
@@ -9,10 +9,6 @@
       <a class="button primary" routerLink="/ratings/new">Add rating</a>
     }
   </header>
-
-  @if (loading()) {
-    <p class="status">Loading ratings...</p>
-  }
 
   @if (errorMessage()) {
     <p class="status error">{{ errorMessage() }}</p>

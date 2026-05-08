@@ -5,11 +5,12 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { RouteReuseStrategy, provideRouter } from '@angular/router';
 
 import { AppErrorHandler } from './core/errors/app-error.handler';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorLoggingInterceptor } from './core/interceptors/error-logging.interceptor';
+import { TimedRouteReuseStrategy } from './core/routing/timed-route-reuse.strategy';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideHttpClient(withInterceptors([authInterceptor, errorLoggingInterceptor])),
     provideRouter(routes),
-    { provide: ErrorHandler, useClass: AppErrorHandler }
+    { provide: ErrorHandler, useClass: AppErrorHandler },
+    { provide: RouteReuseStrategy, useClass: TimedRouteReuseStrategy }
   ]
 };

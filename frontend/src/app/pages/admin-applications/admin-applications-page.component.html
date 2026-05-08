@@ -1,4 +1,4 @@
-<section class="page">
+<section class="page table-page">
   <header class="page-header">
     <div>
       <h1>Admin</h1>
@@ -17,10 +17,6 @@
   <div class="section-heading">
     <h2>Contributor applications</h2>
   </div>
-
-  @if (loadingApplications()) {
-    <p class="status">Loading applications...</p>
-  }
 
   <div class="table-wrap">
     <table aria-label="Contributor applications table">
@@ -77,10 +73,6 @@
   <div class="section-heading">
     <h2>User permissions</h2>
   </div>
-
-  @if (loadingUsers()) {
-    <p class="status">Loading users...</p>
-  }
 
   <div class="table-wrap permissions-table">
     <table aria-label="User permissions table">
@@ -155,10 +147,6 @@
   <div class="section-heading">
     <h2>Current contributors</h2>
   </div>
-
-  @if (loadingContributors()) {
-    <p class="status">Loading contributors...</p>
-  }
 
   <div class="table-wrap contributors-table">
     <table aria-label="Current contributors table">
