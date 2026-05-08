@@ -90,6 +90,52 @@
   min-width: 900px;
 }
 
+.profile-ratings-table {
+  min-width: 1320px;
+}
+
+.profile-ratings-table th {
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.profile-ratings-table th:nth-child(1),
+.profile-ratings-table td:nth-child(1) {
+  min-width: 170px;
+}
+
+.profile-ratings-table th:nth-child(2),
+.profile-ratings-table td:nth-child(2) {
+  min-width: 180px;
+}
+
+.profile-ratings-table th:nth-child(3),
+.profile-ratings-table td:nth-child(3),
+.profile-ratings-table th:nth-child(5),
+.profile-ratings-table td:nth-child(5),
+.profile-ratings-table th:nth-child(6),
+.profile-ratings-table td:nth-child(6),
+.profile-ratings-table th:nth-child(7),
+.profile-ratings-table td:nth-child(7) {
+  min-width: 96px;
+}
+
+.profile-ratings-table th:nth-child(4),
+.profile-ratings-table td:nth-child(4) {
+  min-width: 140px;
+}
+
+.profile-ratings-table th:nth-child(8),
+.profile-ratings-table td:nth-child(8) {
+  min-width: 430px;
+}
+
+.rating-score {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
 .picture-upload {
   align-items: center;
   display: grid;

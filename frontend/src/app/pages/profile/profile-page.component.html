@@ -111,7 +111,7 @@
       </div>
 
       <div class="table-wrap profile-table-wrap">
-        <table aria-label="Profile ratings table">
+        <table class="profile-ratings-table" aria-label="Profile ratings table">
           <thead>
             <tr>
               <th>Restaurant</th>
@@ -134,11 +134,13 @@
                 <tr>
                   <td data-label="Restaurant">{{ rating.restaurantName }}</td>
                   <td data-label="Location">{{ rating.location }}</td>
-                  <td data-label="Overall">{{ rating.overallRating }}</td>
-                  <td data-label="Affordability">{{ rating.affordabilityRating }}</td>
-                  <td data-label="Sauce">{{ rating.sauce }}</td>
-                  <td data-label="Toppings">{{ rating.toppings }}</td>
-                  <td data-label="Crust">{{ rating.crust }}</td>
+                  <td class="rating-score" data-label="Overall">{{ rating.overallRating }}</td>
+                  <td class="rating-score" data-label="Affordability">
+                    {{ rating.affordabilityRating }}
+                  </td>
+                  <td class="rating-score" data-label="Sauce">{{ rating.sauce }}</td>
+                  <td class="rating-score" data-label="Toppings">{{ rating.toppings }}</td>
+                  <td class="rating-score" data-label="Crust">{{ rating.crust }}</td>
                   <td data-label="Comments">{{ rating.comments }}</td>
                 </tr>
               }
